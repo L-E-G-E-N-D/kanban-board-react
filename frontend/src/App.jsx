@@ -1,15 +1,15 @@
-
+import { useState } from "react"
 
 
 
 function App() {
-  const tasks=[
+  const [tasks,setTasks]=useState([
     {id:1, title:"Task 1", status:"todo"},
     {id:2, title:"Task 2", status:"doing"},
     {id:3, title:"Task 3", status:"done"},
     {id:4, title:"Task 4", status:"done"},
     {id:5, title:"Task 5", status:"doing"},
-  ]
+  ])
 
 
   return (
