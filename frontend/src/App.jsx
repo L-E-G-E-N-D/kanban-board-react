@@ -11,11 +11,34 @@ function App() {
     {id:5, title:"Task 5", status:"doing"},
   ])
 
+  const[newTask, setNewTask]=useState("");
+
+  function addTask(){
+    if(newTask.trim()==="") return;
+
+    setTasks([
+      ...tasks,
+      {
+        id:tasks.length+1,
+        title:newTask,
+        status:"todo"
+      }
+    ])
+    setNewTask("");
+  }
 
   return (
     <div>
       <div>
         <h1>KanbanBoard</h1>
+        <input
+          type="text"
+          value={newTask}
+          onChange={(e)=>setNewTask(e.target.value)}
+          placeholder="New Task"
+        />
+        <button onClick={addTask}>Add Task</button>
+        
         <h3>Logout</h3>
         
       <div>
