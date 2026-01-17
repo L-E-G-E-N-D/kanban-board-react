@@ -27,6 +27,15 @@ function App() {
     setNewTask("");
   }
 
+  function moveTask(id, newStatus){
+    setTasks(
+      tasks.map(task=>
+        task.id===id?{...task,status:newStatus}:task
+      )
+    );
+  }
+
+
   return (
     <div>
       <div>
@@ -38,17 +47,26 @@ function App() {
           placeholder="New Task"
         />
         <button onClick={addTask}>Add Task</button>
-        
+
+
         <h3>Logout</h3>
         
+
       <div>
         <h2>ToDo</h2>
         {tasks
           .filter(task=>task.status==="todo")
           .map(task=>(
-            <div key={task.id}>{task.title}</div>
+            <div key={task.id}>
+              {task.title}
+              <button onClick={()=>moveTask(task.id,"doing")}>
+                Move to Doing
+              </button>
+            </div>
           ))
           }
+
+
 
       </div>
       <div>
@@ -56,11 +74,19 @@ function App() {
         {tasks
           .filter(task=>task.status==="doing")
           .map(task=>(
-            <div key={task.id}>{task.title}</div>
+            <div key={task.id}>
+              {task.title}
+              <button onClick={()=>moveTask(task.id,"done")}>
+                Move to Done
+              </button>
+            </div>
           ))
           }
-        
+
       </div>
+
+
+
       <div>
         <h2>Done</h2>
         {tasks
