@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+import Column from "./components/Column";
 
 
 function App() {
@@ -38,67 +38,37 @@ function App() {
 
   return (
     <div>
-      <div>
-        <h1>KanbanBoard</h1>
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e)=>setNewTask(e.target.value)}
-          placeholder="New Task"
-        />
-        <button onClick={addTask}>Add Task</button>
+      <h1>Kanban Board</h1>
+
+      <input
+        type="text"
+        value={newTask}
+        onChange={(e) => setNewTask(e.target.value)}
+        placeholder="New task"
+      />
+
+      <button onClick={addTask}>Add</button>
 
 
-        <h3>Logout</h3>
-        
+      <Column
+        title="To Do"
+        tasks={tasks.filter(t => t.status === "todo")}
+        onMove={moveTask}
+      />
 
-      <div>
-        <h2>ToDo</h2>
-        {tasks
-          .filter(task=>task.status==="todo")
-          .map(task=>(
-            <div key={task.id}>
-              {task.title}
-              <button onClick={()=>moveTask(task.id,"doing")}>
-                Move to Doing
-              </button>
-            </div>
-          ))
-          }
+      <Column
+        title="Doing"
+        tasks={tasks.filter(t => t.status === "doing")}
+        onMove={moveTask}
+      />
 
-
-
-      </div>
-      <div>
-        <h2>Doing</h2>
-        {tasks
-          .filter(task=>task.status==="doing")
-          .map(task=>(
-            <div key={task.id}>
-              {task.title}
-              <button onClick={()=>moveTask(task.id,"done")}>
-                Move to Done
-              </button>
-            </div>
-          ))
-          }
-
-      </div>
-
-
-
-      <div>
-        <h2>Done</h2>
-        {tasks
-          .filter(task=>task.status==="done")
-          .map(task=>(
-            <div key={task.id}>{task.title}</div>
-          ))
-          }
-      </div>
-      </div>
+      <Column
+        title="Done"
+        tasks={tasks.filter(t => t.status === "done")}
+        onMove={moveTask}
+      />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
