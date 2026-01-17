@@ -1,40 +1,39 @@
-import { useState } from "react"
+import { useState } from "react";
 import Column from "./components/Column";
-
+import "./App.css";
 
 function App() {
-  const [tasks,setTasks]=useState([
-    {id:1, title:"Task 1", status:"todo"},
-    {id:2, title:"Task 2", status:"doing"},
-    {id:3, title:"Task 3", status:"done"},
-    {id:4, title:"Task 4", status:"done"},
-    {id:5, title:"Task 5", status:"doing"},
-  ])
+  const [tasks, setTasks] = useState([
+    { id: 1, title: "Task 1", status: "todo" },
+    { id: 2, title: "Task 2", status: "doing" },
+    { id: 3, title: "Task 3", status: "done" },
+    { id: 4, title: "Task 4", status: "done" },
+    { id: 5, title: "Task 5", status: "doing" },
+  ]);
 
-  const[newTask, setNewTask]=useState("");
+  const [newTask, setNewTask] = useState("");
 
-  function addTask(){
-    if(newTask.trim()==="") return;
+  function addTask() {
+    if (newTask.trim() === "") return;
 
     setTasks([
       ...tasks,
       {
-        id:tasks.length+1,
-        title:newTask,
-        status:"todo"
-      }
-    ])
+        id: tasks.length + 1,
+        title: newTask,
+        status: "todo",
+      },
+    ]);
     setNewTask("");
   }
 
-  function moveTask(id, newStatus){
+  function moveTask(id, newStatus) {
     setTasks(
-      tasks.map(task=>
-        task.id===id?{...task,status:newStatus}:task
+      tasks.map((task) =>
+        task.id === id ? { ...task, status: newStatus } : task
       )
     );
   }
-
 
   return (
     <div>
@@ -49,24 +48,25 @@ function App() {
 
       <button onClick={addTask}>Add</button>
 
+      <div className="board">
+        <Column
+          title="To Do"
+          tasks={tasks.filter((t) => t.status === "todo")}
+          onMove={moveTask}
+        />
 
-      <Column
-        title="To Do"
-        tasks={tasks.filter(t => t.status === "todo")}
-        onMove={moveTask}
-      />
+        <Column
+          title="Doing"
+          tasks={tasks.filter((t) => t.status === "doing")}
+          onMove={moveTask}
+        />
 
-      <Column
-        title="Doing"
-        tasks={tasks.filter(t => t.status === "doing")}
-        onMove={moveTask}
-      />
-
-      <Column
-        title="Done"
-        tasks={tasks.filter(t => t.status === "done")}
-        onMove={moveTask}
-      />
+        <Column
+          title="Done"
+          tasks={tasks.filter((t) => t.status === "done")}
+          onMove={moveTask}
+        />
+      </div>
     </div>
   );
 }

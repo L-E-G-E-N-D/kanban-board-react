@@ -1,6 +1,6 @@
 function Task({task, onMove}) {
     return (
-        <div>
+        <div className="task">
             {task.title}
 
             {task.status === "todo" && (
