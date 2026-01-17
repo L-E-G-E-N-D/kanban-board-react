@@ -1,38 +1,58 @@
 import { useState } from "react";
 import Column from "./components/Column";
 import "./App.css";
+import { useEffect } from "react";
+
 
 function App() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Task 1", status: "todo" },
-    { id: 2, title: "Task 2", status: "doing" },
-    { id: 3, title: "Task 3", status: "done" },
-    { id: 4, title: "Task 4", status: "done" },
-    { id: 5, title: "Task 5", status: "doing" },
-  ]);
+
+  useEffect(()=>{
+    fetch("http://localhost:3000/tasks")
+    .then(res=>res.json())
+    .then(data=>setTasks(data))
+  },[])
+
+  const [tasks, setTasks] = useState([]);
 
   const [newTask, setNewTask] = useState("");
+
+
 
   function addTask() {
     if (newTask.trim() === "") return;
 
-    setTasks([
-      ...tasks,
-      {
-        id: tasks.length + 1,
-        title: newTask,
-        status: "todo",
-      },
-    ]);
-    setNewTask("");
+    fetch("http://localhost:3000/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+  },
+      body: JSON.stringify({ title: newTask })
+    })
+      .then((res) => res.json())
+      .then((task) => {
+        setTasks([...tasks, task]);
+        setNewTask("");
+      });
   }
 
+
+
   function moveTask(id, newStatus) {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, status: newStatus } : task
-      )
-    );
+    fetch(`http://localhost:3000/tasks/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ status: newStatus })
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setTasks(
+          tasks.map((task) =>
+            task.id === id ? { ...task, status: newStatus } : task
+          )
+        );
+      });
   }
 
   return (
