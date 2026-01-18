@@ -6,10 +6,28 @@ import { useEffect } from "react";
 
 function App() {
 
+  const[loding,setLoading]=useState(false);
+  const[error,setError]=useState(null);
+
   useEffect(()=>{
+    setLoading(true)
+    setError(null)
+
     fetch("http://localhost:3000/tasks")
-    .then(res=>res.json())
-    .then(data=>setTasks(data))
+    .then(res=>{
+      if (!res.ok){
+        throw new Error("Failed to fetch tasks");
+      }
+      return res.json();
+    })
+    .then(data=>{
+      setTasks(data)
+      setLoading(false)
+    })
+    .catch(err=>{
+      setError(err.message)
+      setLoading(false)
+    })
   },[])
 
   const [tasks, setTasks] = useState([]);
@@ -19,7 +37,10 @@ function App() {
 
 
   function addTask() {
+
     if (newTask.trim() === "") return;
+
+    setError(null)
 
     fetch("http://localhost:3000/tasks", {
       method: "POST",
@@ -28,16 +49,28 @@ function App() {
   },
       body: JSON.stringify({ title: newTask })
     })
-      .then((res) => res.json())
-      .then((task) => {
-        setTasks([...tasks, task]);
+      .then(res=>{
+        if (!res.ok){
+          throw new Error("Failed to add task");
+        }
+        return res.json();
+      })
+      .then(createdTask => {
+        setTasks([...tasks, createdTask]);
         setNewTask("");
+      })
+      .catch(err=>{
+        setError(err.message)
       });
+      
   }
 
 
 
   function moveTask(id, newStatus) {
+
+    setError(null)
+
     fetch(`http://localhost:3000/tasks/${id}`, {
       method: "PATCH",
       headers: {
@@ -45,19 +78,27 @@ function App() {
       },
       body: JSON.stringify({ status: newStatus })
     })
-      .then((res) => res.json())
-      .then(() => {
+      .then(res => {
+        if (!res.ok){
+          throw new Error("Failed to update task");
+        }
         setTasks(
           tasks.map((task) =>
             task.id === id ? { ...task, status: newStatus } : task
           )
         );
+      })
+      .catch(err=>{
+        setError(err.message)
       });
   }
 
   return (
     <div>
       <h1>Kanban Board</h1>
+
+      {loding && <p>Loading tasks...</p>}
+      {error && <p style={{color:"red"}}>{error}</p>}
 
       <input
         type="text"
