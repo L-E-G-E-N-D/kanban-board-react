@@ -2,11 +2,13 @@ import { useState } from "react";
 import Column from "./components/Column";
 import "./App.css";
 import { useEffect } from "react";
+import {DragDropContext,Droppable,Draggable} from '@hello-pangea/dnd';
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [loding, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [newTask, setNewTask] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -29,7 +31,7 @@ function App() {
       });
   }, []);
 
-  const [newTask, setNewTask] = useState("");
+  
 
   function addTask() {
     if (newTask.trim() === "") return;
@@ -83,11 +85,26 @@ function App() {
       });
   }
 
+  function onDragEnd(result) {
+    const {destination,source,draggableId} = result;
+
+    if(!destination) return;
+    if(
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) return;
+
+    const newStatus = destination.droppableId;
+    
+    moveTask(draggableId,newStatus);
+  }
+
+
   return (
     <div>
       <h1>Kanban Board</h1>
 
-      {loding && <p>Loading tasks...</p>}
+      {loading && <p>Loading tasks...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       <input
@@ -99,6 +116,7 @@ function App() {
 
       <button onClick={addTask}>Add</button>
 
+    <DragDropContext onDragEnd={onDragEnd}>
       <div className="board">
         <Column
           title="To Do"
@@ -118,6 +136,7 @@ function App() {
           onMove={moveTask}
         />
       </div>
+      </DragDropContext>
     </div>
   );
 }
