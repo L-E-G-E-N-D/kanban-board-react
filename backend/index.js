@@ -1,45 +1,48 @@
 
 const express=require('express');
 const cors=require('cors');
+const mongoose=require('mongoose');
+require('dotenv').config();
+
 const app=express();
 app.use(cors());
 app.use(express.json());
+const Task=require('./models/Task');
 
-
-let tasks = [
-  { id: 1, title: "Design UI", status: "todo" },
-  { id: 2, title: "Build backend", status: "doing" },
-  { id: 3, title: "Setup project", status: "done" }
-];
-
+mongoose.connect(process.env.MONGO_URI)
+.then(()=>console.log('Connected to MongoDB'))
+.catch(err=>console.error('MongoDB connection error:',err));
 
 app.get('/health', (req, res) => {
     res.send("Backend running");
 });
 
-app.get('/tasks', (req, res) => {
+app.get('/tasks', async(req, res) => {
+    const tasks = await Task.find();
     res.json(tasks);
 });
 
-app.post('/tasks', (req, res) => {
+
+app.post('/tasks', async(req, res) => {
     const { title } = req.body;
-    const newTask = {
-        id:Date.now(),
-        title,
-        status:"todo"
-    };
-    tasks.push(newTask);
+
+    const newTask = new Task({ title });
+    await newTask.save();
+
     res.json(newTask)
 })
 
-app.patch('/tasks/:id', (req, res) => {
-    const  id  = Number(req.params.id);
-    const {status}=req.body
-    tasks = tasks.map(task =>
-        task.id === id ? { ...task, status: status } : task
+
+app.patch('/tasks/:id', async(req, res) => {
+    const {status}=req.body;
+
+    const updatedTask=await Task.findByIdAndUpdate(
+        req.params.id,
+        {status},
+        {new:true}
     );
-    const updatedTask = tasks.find(task => task.id === id);
-    res.json({ success: true })
+    
+    res.json(updatedTask);
 })
 
 

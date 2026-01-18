@@ -3,93 +3,83 @@ import Column from "./components/Column";
 import "./App.css";
 import { useEffect } from "react";
 
-
 function App() {
+  const [tasks, setTasks] = useState([]);
+  const [loding, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const[loding,setLoading]=useState(false);
-  const[error,setError]=useState(null);
-
-  useEffect(()=>{
-    setLoading(true)
-    setError(null)
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
 
     fetch("http://localhost:3000/tasks")
-    .then(res=>{
-      if (!res.ok){
-        throw new Error("Failed to fetch tasks");
-      }
-      return res.json();
-    })
-    .then(data=>{
-      setTasks(data)
-      setLoading(false)
-    })
-    .catch(err=>{
-      setError(err.message)
-      setLoading(false)
-    })
-  },[])
-
-  const [tasks, setTasks] = useState([]);
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setTasks(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
   const [newTask, setNewTask] = useState("");
 
-
-
   function addTask() {
-
     if (newTask.trim() === "") return;
 
-    setError(null)
+    setError(null);
 
     fetch("http://localhost:3000/tasks", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
-  },
-      body: JSON.stringify({ title: newTask })
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: newTask }),
     })
-      .then(res=>{
-        if (!res.ok){
+      .then((res) => {
+        if (!res.ok) {
           throw new Error("Failed to add task");
         }
         return res.json();
       })
-      .then(createdTask => {
+      .then((createdTask) => {
         setTasks([...tasks, createdTask]);
         setNewTask("");
       })
-      .catch(err=>{
-        setError(err.message)
+      .catch((err) => {
+        setError(err.message);
       });
-      
   }
 
-
-
   function moveTask(id, newStatus) {
-
-    setError(null)
+    setError(null);
 
     fetch(`http://localhost:3000/tasks/${id}`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status: newStatus })
+      body: JSON.stringify({ status: newStatus }),
     })
-      .then(res => {
-        if (!res.ok){
+      .then((res) => {
+        if (!res.ok) {
           throw new Error("Failed to update task");
         }
         setTasks(
           tasks.map((task) =>
-            task.id === id ? { ...task, status: newStatus } : task
+            task._id === id ? { ...task, status: newStatus } : task
           )
         );
       })
-      .catch(err=>{
-        setError(err.message)
+      .catch((err) => {
+        setError(err.message);
       });
   }
 
@@ -98,7 +88,7 @@ function App() {
       <h1>Kanban Board</h1>
 
       {loding && <p>Loading tasks...</p>}
-      {error && <p style={{color:"red"}}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <input
         type="text"
