@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Column from "./components/Column";
-import "./App.css";
 import { useEffect } from "react";
-import {DragDropContext,Droppable,Draggable} from '@hello-pangea/dnd';
+import { DragDropContext } from "@hello-pangea/dnd";
+
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -101,44 +101,52 @@ function App() {
 
 
   return (
-    <div>
-      <h1>Kanban Board</h1>
+  <div className="min-h-screen bg-gray-100 p-6">
+    <h1 className="text-3xl font-bold mb-6 text-gray-800">
+      Kanban Board
+    </h1>
 
-      {loading && <p>Loading tasks...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    {loading && <p className="mb-2">Loading tasks...</p>}
+    {error && <p className="mb-2 text-red-500">{error}</p>}
 
+    <div className="mb-6 flex gap-2">
       <input
+        className="border rounded px-3 py-2"
         type="text"
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
         placeholder="New task"
       />
 
-      <button onClick={addTask}>Add</button>
+      <button
+        onClick={addTask}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Add
+      </button>
+    </div>
 
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="board">
+      <div className="flex gap-6">
         <Column
           title="To Do"
           tasks={tasks.filter((t) => t.status === "todo")}
           onMove={moveTask}
         />
-
         <Column
           title="Doing"
           tasks={tasks.filter((t) => t.status === "doing")}
           onMove={moveTask}
         />
-
         <Column
           title="Done"
           tasks={tasks.filter((t) => t.status === "done")}
           onMove={moveTask}
         />
       </div>
-      </DragDropContext>
-    </div>
-  );
+    </DragDropContext>
+  </div>
+);
 }
 
 export default App;
