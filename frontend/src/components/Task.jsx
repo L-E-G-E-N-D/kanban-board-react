@@ -17,11 +17,18 @@ function Task({ task, index, onDelete }) {
             ${snapshot.isDragging ? "bg-blue-50 shadow-lg rotate-1" : "hover:shadow-md"}
           `}
         >
-          <div className="flex items-center justify-between">
-            <span className="flex-1">{task.title}</span>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium text-gray-800 mb-1">{task.title}</h3>
+              {task.description && (
+                <p className="text-sm text-gray-600 line-clamp-2">
+                  {task.description}
+                </p>
+              )}
+            </div>
             <button
               onClick={handleDelete}
-              className="ml-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
+              className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
               title="Delete task"
             >
               <svg

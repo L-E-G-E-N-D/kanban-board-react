@@ -2,13 +2,14 @@ import { useState } from "react";
 import Column from "./components/Column";
 import { useEffect } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
+import AddTaskModal from "./components/AddTaskModal";
 
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [newTask, setNewTask] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -33,8 +34,8 @@ function App() {
 
   
 
-  function addTask() {
-    if (newTask.trim() === "") return;
+  function addTask(title, description = "") {
+    if (title.trim() === "") return;
 
     setError(null);
 
@@ -43,7 +44,7 @@ function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title: newTask }),
+      body: JSON.stringify({ title, description }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -53,7 +54,6 @@ function App() {
       })
       .then((createdTask) => {
         setTasks([...tasks, createdTask]);
-        setNewTask("");
       })
       .catch((err) => {
         setError(err.message);
@@ -128,22 +128,20 @@ function App() {
       {loading && <p className="mb-2">Loading tasks...</p>}
       {error && <p className="mb-2 text-red-500">{error}</p>}
 
-      <div className="mb-6 flex gap-2">
-        <input
-          className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="New task"
-        />
-
+      <div className="mb-6">
         <button
-          onClick={addTask}
+          onClick={() => setIsModalOpen(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition"
         >
-          Add
+          Add Task
         </button>
       </div>
+
+      <AddTaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddTask={addTask}
+      />
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex gap-6">
