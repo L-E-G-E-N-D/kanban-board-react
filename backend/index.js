@@ -9,6 +9,11 @@ app.use(cors());
 app.use(express.json());
 const Task = require('./models/Task');
 
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("./models/User");
+
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
@@ -49,6 +54,51 @@ app.delete('/tasks/:id', async (req, res) => {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: 'Task deleted successfully' });
 })
+
+
+app.post("/auth/signup", async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Missing Fields" });
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const user=await User.create({ 
+        email,
+        password: hashedPassword 
+    });
+
+    res.status(201).json({ message: "User created successfully" });
+})
+
+
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
+
+  const token = jwt.sign(
+    { userId: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  res.json({ token });
+});
 
 
 app.listen(3000, () => {
