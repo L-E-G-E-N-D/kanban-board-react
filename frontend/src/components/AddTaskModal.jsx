@@ -24,11 +24,11 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4"
       onClick={handleClose}
     >
       <div 
-        className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-6 border-b">
@@ -71,6 +71,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
               autoFocus
+              autoComplete="off"
             />
           </div>
 
@@ -88,6 +89,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
               placeholder="Enter task description (optional)"
               rows={4}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              autoComplete="off"
             />
           </div>
 
@@ -101,7 +103,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm"
             >
               Add Task
             </button>

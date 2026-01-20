@@ -19,8 +19,8 @@ function Task({ task, index, onDelete, onEdit }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm cursor-grab transition-colors transition-transform
-            ${snapshot.isDragging ? "bg-blue-50 shadow-md scale-[1.01]" : "hover:shadow-md"}
+          className={`bg-white border border-gray-200 rounded-lg p-3 shadow-sm cursor-grab transition-transform transition-shadow
+            ${snapshot.isDragging ? "bg-blue-50 shadow-md scale-[1.01]" : "hover:shadow-md hover:-translate-y-0.5"}
           `}
         >
           <div className="flex items-start justify-between gap-2">

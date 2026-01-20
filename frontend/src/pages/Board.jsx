@@ -191,28 +191,28 @@ function Board({ token, onLogout, tasks, setTasks }) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Kanban Board</h1>
-        <button
-          onClick={onLogout}
-          className="text-sm text-gray-600 hover:text-red-600 hover:underline"
-        >
-          Logout
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <h1 className="text-3xl font-semibold text-gray-800">Kanban Board</h1>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition shadow-sm"
+            >
+              Add Task
+            </button>
+            <button
+              onClick={onLogout}
+              className="text-sm text-gray-600 hover:text-red-600 hover:underline"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
 
-      {loading && <p className="mb-2">Loading tasks...</p>}
-      {error && <p className="mb-2 text-red-500">{error}</p>}
-
-      <div className="mb-6">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition"
-        >
-          Add Task
-        </button>
-      </div>
+        {loading && <p className="mb-2">Loading tasks...</p>}
+        {error && <p className="mb-2 text-red-500">{error}</p>}
 
       <AddTaskModal
         isOpen={isModalOpen}
@@ -231,31 +231,32 @@ function Board({ token, onLogout, tasks, setTasks }) {
         }
       />
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-6">
-          <Column
-            title="To Do"
-            tasks={todoTasks}
-            onMove={syncTaskStatus}
-            onDelete={deleteTask}
-            onEdit={openEdit}
-          />
-          <Column
-            title="Doing"
-            tasks={doingTasks}
-            onMove={syncTaskStatus}
-            onDelete={deleteTask}
-            onEdit={openEdit}
-          />
-          <Column
-            title="Done"
-            tasks={doneTasks}
-            onMove={syncTaskStatus}
-            onDelete={deleteTask}
-            onEdit={openEdit}
-          />
-        </div>
-      </DragDropContext>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-2">
+            <Column
+              title="To Do"
+              tasks={todoTasks}
+              onMove={syncTaskStatus}
+              onDelete={deleteTask}
+              onEdit={openEdit}
+            />
+            <Column
+              title="Doing"
+              tasks={doingTasks}
+              onMove={syncTaskStatus}
+              onDelete={deleteTask}
+              onEdit={openEdit}
+            />
+            <Column
+              title="Done"
+              tasks={doneTasks}
+              onMove={syncTaskStatus}
+              onDelete={deleteTask}
+              onEdit={openEdit}
+            />
+          </div>
+        </DragDropContext>
+      </div>
     </div>
   );
 }
