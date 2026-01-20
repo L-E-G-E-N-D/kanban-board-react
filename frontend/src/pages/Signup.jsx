@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API_BASE_URL from "../api.js";
 
 export default function Signup({ onSwitch }) {
   const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ export default function Signup({ onSwitch }) {
   function handleSignup() {
     setError(null);
 
-    fetch("http://localhost:3000/auth/signup", {
+    fetch(`${API_BASE_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -22,9 +23,9 @@ export default function Signup({ onSwitch }) {
         setEmail("");
         setPassword("");
         setSuccess(true);
-        setTimeout(()=>{
-            onSwitch();
-        },500)
+        setTimeout(() => {
+          onSwitch();
+        }, 500);
       })
       .catch((err) => setError(err.message));
   }

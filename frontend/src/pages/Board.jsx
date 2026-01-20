@@ -3,6 +3,7 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import Column from "../components/Column";
 import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
+import API_BASE_URL from "../api.js";
 
 function Board({ token, onLogout, tasks, setTasks }) {
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
     setLoading(true);
     setError(null);
 
-    fetch("http://localhost:3000/tasks", {
+    fetch(`${API_BASE_URL}/tasks`, {
       headers: authHeaders,
     })
       .then((res) => {
@@ -54,7 +55,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
 
     setError(null);
 
-    fetch("http://localhost:3000/tasks", {
+    fetch(`${API_BASE_URL}/tasks`, {
       method: "POST",
       headers: {
         ...authHeaders,
@@ -80,7 +81,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
     (id, newStatus, previousTasks) => {
       setError(null);
 
-      fetch(`http://localhost:3000/tasks/${id}`, {
+      fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: "PATCH",
         headers: {
           ...authHeaders,
@@ -106,7 +107,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
   const deleteTask = useCallback((id) => {
     setError(null);
 
-    fetch(`http://localhost:3000/tasks/${id}`, {
+    fetch(`${API_BASE_URL}/tasks/${id}`, {
       method: "DELETE",
       headers: authHeaders,
     })
@@ -129,7 +130,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
   const updateTask = useCallback((id, updatedFields) => {
     setError(null);
 
-    fetch(`http://localhost:3000/tasks/${id}`, {
+    fetch(`${API_BASE_URL}/tasks/${id}`, {
       method: "PATCH",
       headers: {
         ...authHeaders,
