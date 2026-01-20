@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import AddTaskModal from "./components/AddTaskModal";
 import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -22,6 +23,8 @@ function App() {
   localStorage.removeItem("token");
   setToken(null);
 }
+
+  const [authMode, setAuthMode] = useState("login");
 
 
   useEffect(() => {
@@ -121,21 +124,26 @@ function App() {
   }
 
   function onDragEnd(result) {
-    const {destination,source,draggableId} = result;
+    const { destination, source, draggableId } = result;
 
-    if(!destination) return;
-    if(
+    if (!destination) return;
+    if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
-    ) return;
+    )
+      return;
 
     const newStatus = destination.droppableId;
-    
-    moveTask(draggableId,newStatus);
+
+    moveTask(draggableId, newStatus);
   }
 
   if (!token) {
-    return <Login onLogin={setToken} />;
+    return authMode === "login" ? (
+      <Login onLogin={setToken} onSwitch={() => setAuthMode("signup")} />
+    ) : (
+      <Signup onSwitch={() => setAuthMode("login")} />
+    );
   }
 
   return (
