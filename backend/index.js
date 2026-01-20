@@ -65,10 +65,19 @@ app.patch("/tasks/:id", auth, async (req, res) => {
 });
 
 
-app.delete('/tasks/:id', async (req, res) => {
-    await Task.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Task deleted successfully' });
-})
+app.delete("/tasks/:id", auth, async (req, res) => {
+  const task = await Task.findOneAndDelete({
+    _id: req.params.id,
+    userId: req.userId,
+  });
+
+  if (!task) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  res.json({ message: "Task deleted successfully" });
+});
+
 
 
 app.post("/auth/signup", async (req, res) => {

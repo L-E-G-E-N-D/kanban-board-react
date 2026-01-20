@@ -3,19 +3,34 @@ import Column from "./components/Column";
 import { useEffect } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import AddTaskModal from "./components/AddTaskModal";
-
+import Login from "./pages/Login.jsx";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [token, setToken] = useState(
+  localStorage.getItem("token")
+);
+  const authHeaders = {
+  Authorization: `Bearer ${token}`,
+};
+
+
+  function logout() {
+  localStorage.removeItem("token");
+  setToken(null);
+}
+
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    fetch("http://localhost:3000/tasks")
+    fetch("http://localhost:3000/tasks",{
+      headers: authHeaders,
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch tasks");
@@ -42,6 +57,7 @@ function App() {
     fetch("http://localhost:3000/tasks", {
       method: "POST",
       headers: {
+        ...authHeaders,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ title, description }),
@@ -66,6 +82,7 @@ function App() {
     fetch(`http://localhost:3000/tasks/${id}`, {
       method: "PATCH",
       headers: {
+        ...authHeaders,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ status: newStatus }),
@@ -90,6 +107,7 @@ function App() {
 
     fetch(`http://localhost:3000/tasks/${id}`, {
       method: "DELETE",
+      headers: authHeaders,
     })
       .then((res) => {
         if (!res.ok) {
@@ -116,13 +134,20 @@ function App() {
     moveTask(draggableId,newStatus);
   }
 
+  if (!token) {
+    return <Login onLogin={setToken} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Kanban Board</h1>
-
-        <span className="text-sm text-gray-500">Logout</span>
+        <button
+          onClick={logout}
+          className="text-sm text-gray-600 hover:text-red-600 hover:underline"
+        >
+          Logout
+        </button>
       </div>
 
       {loading && <p className="mb-2">Loading tasks...</p>}
