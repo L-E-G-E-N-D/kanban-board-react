@@ -45,6 +45,11 @@ app.patch('/tasks/:id', async(req, res) => {
     res.json(updatedTask);
 })
 
+app.delete('/tasks/:id', async(req, res) => {
+    await Task.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Task deleted successfully' });
+})
+
 
 app.listen(3000,()=>{
     console.log("Server is running on port 3000");

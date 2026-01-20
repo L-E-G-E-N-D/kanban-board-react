@@ -85,6 +85,23 @@ function App() {
       });
   }
 
+  function deleteTask(id) {
+    setError(null);
+
+    fetch(`http://localhost:3000/tasks/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to delete task");
+        }
+        setTasks(tasks.filter((task) => task._id !== id));
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }
+
   function onDragEnd(result) {
     const {destination,source,draggableId} = result;
 
@@ -101,52 +118,57 @@ function App() {
 
 
   return (
-  <div className="min-h-screen bg-gray-100 p-6">
-    <h1 className="text-3xl font-bold mb-6 text-gray-800">
-      Kanban Board
-    </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Kanban Board</h1>
 
-    {loading && <p className="mb-2">Loading tasks...</p>}
-    {error && <p className="mb-2 text-red-500">{error}</p>}
-
-    <div className="mb-6 flex gap-2">
-      <input
-        className="border rounded px-3 py-2"
-        type="text"
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        placeholder="New task"
-      />
-
-      <button
-        onClick={addTask}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Add
-      </button>
-    </div>
-
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-6">
-        <Column
-          title="To Do"
-          tasks={tasks.filter((t) => t.status === "todo")}
-          onMove={moveTask}
-        />
-        <Column
-          title="Doing"
-          tasks={tasks.filter((t) => t.status === "doing")}
-          onMove={moveTask}
-        />
-        <Column
-          title="Done"
-          tasks={tasks.filter((t) => t.status === "done")}
-          onMove={moveTask}
-        />
+        <span className="text-sm text-gray-500">Logout</span>
       </div>
-    </DragDropContext>
-  </div>
-);
+
+      {loading && <p className="mb-2">Loading tasks...</p>}
+      {error && <p className="mb-2 text-red-500">{error}</p>}
+
+      <div className="mb-6 flex gap-2">
+        <input
+          className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          placeholder="New task"
+        />
+
+        <button
+          onClick={addTask}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition"
+        >
+          Add
+        </button>
+      </div>
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex gap-6">
+          <Column
+            title="To Do"
+            tasks={tasks.filter((t) => t.status === "todo")}
+            onMove={moveTask}
+            onDelete={deleteTask}
+          />
+          <Column
+            title="Doing"
+            tasks={tasks.filter((t) => t.status === "doing")}
+            onMove={moveTask}
+            onDelete={deleteTask}
+          />
+          <Column
+            title="Done"
+            tasks={tasks.filter((t) => t.status === "done")}
+            onMove={moveTask}
+            onDelete={deleteTask}
+          />
+        </div>
+      </DragDropContext>
+    </div>
+  );
 }
 
 export default App;
