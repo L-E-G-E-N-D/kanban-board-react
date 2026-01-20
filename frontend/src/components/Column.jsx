@@ -2,7 +2,7 @@ import Task from "./Task";
 import { Droppable } from "@hello-pangea/dnd";
 
 
-function Column({title, tasks, onMove, onDelete}) {
+function Column({title, tasks, onMove, onDelete, onEdit}) {
     const status = title.toLowerCase().replace(" ", "");
     return (
       <Droppable droppableId={status}>
@@ -17,7 +17,14 @@ function Column({title, tasks, onMove, onDelete}) {
             </h2>
 
             {tasks.map((task, index) => (
-              <Task key={task._id} task={task} onMove={onMove} onDelete={onDelete} index={index} />
+              <Task
+                key={task._id}
+                task={task}
+                onMove={onMove}
+                onDelete={onDelete}
+                onEdit={onEdit}
+                index={index}
+              />
             ))}
             {tasks.length === 0 && (
               <p className="text-sm text-gray-400 italic">Drop tasks here</p>

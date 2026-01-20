@@ -3,6 +3,7 @@ import Column from "./components/Column";
 import { useEffect } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import AddTaskModal from "./components/AddTaskModal";
+import EditTaskModal from "./components/EditTaskModal";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup";
 
@@ -11,6 +12,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
   const [token, setToken] = useState(
   localStorage.getItem("token")
 );
@@ -123,6 +126,38 @@ function App() {
       });
   }
 
+  function openEdit(task) {
+    setEditingTask(task);
+    setIsEditOpen(true);
+  }
+
+  function updateTask(id, updatedFields) {
+    setError(null);
+
+    fetch(`http://localhost:3000/tasks/${id}`, {
+      method: "PATCH",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedFields),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to update task");
+        }
+        return res.json();
+      })
+      .then((updatedTask) => {
+        setTasks(tasks.map((t) => (t._id === id ? updatedTask : t)));
+        setIsEditOpen(false);
+        setEditingTask(null);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }
+
   function onDragEnd(result) {
     const { destination, source, draggableId } = result;
 
@@ -175,6 +210,17 @@ function App() {
         onClose={() => setIsModalOpen(false)}
         onAddTask={addTask}
       />
+      <EditTaskModal
+        isOpen={isEditOpen}
+        task={editingTask}
+        onClose={() => {
+          setIsEditOpen(false);
+          setEditingTask(null);
+        }}
+        onSave={(title, description) =>
+          updateTask(editingTask._id, { title, description })
+        }
+      />
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex gap-6">
@@ -183,18 +229,21 @@ function App() {
             tasks={tasks.filter((t) => t.status === "todo")}
             onMove={moveTask}
             onDelete={deleteTask}
+            onEdit={openEdit}
           />
           <Column
             title="Doing"
             tasks={tasks.filter((t) => t.status === "doing")}
             onMove={moveTask}
             onDelete={deleteTask}
+            onEdit={openEdit}
           />
           <Column
             title="Done"
             tasks={tasks.filter((t) => t.status === "done")}
             onMove={moveTask}
             onDelete={deleteTask}
+            onEdit={openEdit}
           />
         </div>
       </DragDropContext>

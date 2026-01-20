@@ -1,9 +1,14 @@
 import { Draggable } from "@hello-pangea/dnd";
 
-function Task({ task, index, onDelete }) {
+function Task({ task, index, onDelete, onEdit }) {
   const handleDelete = (e) => {
     e.stopPropagation();
     onDelete(task._id);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    onEdit(task);
   };
 
   return (
@@ -26,26 +31,48 @@ function Task({ task, index, onDelete }) {
                 </p>
               )}
             </div>
-            <button
-              onClick={handleDelete}
-              className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
-              title="Delete task"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleEdit}
+                className="flex-shrink-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded p-1 transition"
+                title="Edit task"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536M4 17.25V21h3.75L17.81 10.94a1.5 1.5 0 000-2.121l-3.63-3.63a1.5 1.5 0 00-2.12 0L4 17.25z"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
+                title="Delete task"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       )}

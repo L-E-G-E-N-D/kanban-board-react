@@ -49,11 +49,20 @@ app.post("/tasks", auth, async (req, res) => {
 
 
 app.patch("/tasks/:id", auth, async (req, res) => {
-  const { status } = req.body;
+  const { status, title, description } = req.body;
+
+  if (title !== undefined && title.trim() === "") {
+    return res.status(400).json({ message: "Title cannot be empty" });
+  }
+
+  const updates = {};
+  if (status !== undefined) updates.status = status;
+  if (title !== undefined) updates.title = title;
+  if (description !== undefined) updates.description = description;
 
   const task = await Task.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
-    { status },
+    updates,
     { new: true }
   );
 
