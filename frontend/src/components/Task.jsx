@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 
 function Task({ task, index, onDelete, onEdit }) {
@@ -18,8 +19,8 @@ function Task({ task, index, onDelete, onEdit }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm cursor-grab transition
-            ${snapshot.isDragging ? "bg-blue-50 shadow-lg rotate-1" : "hover:shadow-md"}
+          className={`bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm cursor-grab transition-colors transition-transform
+            ${snapshot.isDragging ? "bg-blue-50 shadow-md scale-[1.01]" : "hover:shadow-md"}
           `}
         >
           <div className="flex items-start justify-between gap-2">
@@ -80,4 +81,4 @@ function Task({ task, index, onDelete, onEdit }) {
   );
 }
 
-export default Task;
+export default memo(Task);

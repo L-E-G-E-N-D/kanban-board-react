@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import Column from "../components/Column";
 import AddTaskModal from "../components/AddTaskModal";
@@ -11,11 +11,15 @@ function Board({ token, onLogout, tasks, setTasks }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
-  const authHeaders = token
-    ? {
-        Authorization: `Bearer ${token}`,
-      }
-    : {};
+  const authHeaders = useMemo(
+    () =>
+      token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {},
+    [token]
+  );
 
   useEffect(() => {
     if (!token) {
@@ -45,7 +49,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
       });
   }, [token]);
 
-  function addTask(title, description = "") {
+  const addTask = useCallback((title, description = "") => {
     if (title.trim() === "") return;
 
     setError(null);
@@ -65,40 +69,41 @@ function Board({ token, onLogout, tasks, setTasks }) {
         return res.json();
       })
       .then((createdTask) => {
-        setTasks([...tasks, createdTask]);
+        setTasks((prev) => [...prev, createdTask]);
       })
       .catch((err) => {
         setError(err.message);
       });
-  }
+  }, [authHeaders]);
 
-  function moveTask(id, newStatus) {
-    setError(null);
+  const syncTaskStatus = useCallback(
+    (id, newStatus, previousTasks) => {
+      setError(null);
 
-    fetch(`http://localhost:3000/tasks/${id}`, {
-      method: "PATCH",
-      headers: {
-        ...authHeaders,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: newStatus }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to update task");
-        }
-        setTasks(
-          tasks.map((task) =>
-            task._id === id ? { ...task, status: newStatus } : task
-          )
-        );
+      fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          ...authHeaders,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
       })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to update task");
+          }
+        })
+        .catch((err) => {
+          setError(err.message);
+          if (previousTasks) {
+            setTasks(previousTasks);
+          }
+        });
+    },
+    [authHeaders]
+  );
 
-  function deleteTask(id) {
+  const deleteTask = useCallback((id) => {
     setError(null);
 
     fetch(`http://localhost:3000/tasks/${id}`, {
@@ -109,19 +114,19 @@ function Board({ token, onLogout, tasks, setTasks }) {
         if (!res.ok) {
           throw new Error("Failed to delete task");
         }
-        setTasks(tasks.filter((task) => task._id !== id));
+        setTasks((prev) => prev.filter((task) => task._id !== id));
       })
       .catch((err) => {
         setError(err.message);
       });
-  }
+  }, [authHeaders]);
 
-  function openEdit(task) {
+  const openEdit = useCallback((task) => {
     setEditingTask(task);
     setIsEditOpen(true);
-  }
+  }, []);
 
-  function updateTask(id, updatedFields) {
+  const updateTask = useCallback((id, updatedFields) => {
     setError(null);
 
     fetch(`http://localhost:3000/tasks/${id}`, {
@@ -139,14 +144,14 @@ function Board({ token, onLogout, tasks, setTasks }) {
         return res.json();
       })
       .then((updatedTask) => {
-        setTasks(tasks.map((t) => (t._id === id ? updatedTask : t)));
+        setTasks((prev) => prev.map((t) => (t._id === id ? updatedTask : t)));
         setIsEditOpen(false);
         setEditingTask(null);
       })
       .catch((err) => {
         setError(err.message);
       });
-  }
+  }, [authHeaders]);
 
   function onDragEnd(result) {
     const { destination, source, draggableId } = result;
@@ -159,9 +164,31 @@ function Board({ token, onLogout, tasks, setTasks }) {
       return;
 
     const newStatus = destination.droppableId;
+    const previousTasks = tasks;
 
-    moveTask(draggableId, newStatus);
+    // Optimistic UI update
+    setTasks((prev) =>
+      prev.map((task) =>
+        task._id === draggableId ? { ...task, status: newStatus } : task
+      )
+    );
+
+    // Sync in background
+    syncTaskStatus(draggableId, newStatus, previousTasks);
   }
+
+  const todoTasks = useMemo(
+    () => tasks.filter((t) => t.status === "todo"),
+    [tasks]
+  );
+  const doingTasks = useMemo(
+    () => tasks.filter((t) => t.status === "doing"),
+    [tasks]
+  );
+  const doneTasks = useMemo(
+    () => tasks.filter((t) => t.status === "done"),
+    [tasks]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
@@ -208,22 +235,22 @@ function Board({ token, onLogout, tasks, setTasks }) {
         <div className="flex gap-6">
           <Column
             title="To Do"
-            tasks={tasks.filter((t) => t.status === "todo")}
-            onMove={moveTask}
+            tasks={todoTasks}
+            onMove={syncTaskStatus}
             onDelete={deleteTask}
             onEdit={openEdit}
           />
           <Column
             title="Doing"
-            tasks={tasks.filter((t) => t.status === "doing")}
-            onMove={moveTask}
+            tasks={doingTasks}
+            onMove={syncTaskStatus}
             onDelete={deleteTask}
             onEdit={openEdit}
           />
           <Column
             title="Done"
-            tasks={tasks.filter((t) => t.status === "done")}
-            onMove={moveTask}
+            tasks={doneTasks}
+            onMove={syncTaskStatus}
             onDelete={deleteTask}
             onEdit={openEdit}
           />
