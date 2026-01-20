@@ -12,6 +12,7 @@ const Task = require('./models/Task');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
+const auth = require("./middleware/auth");
 
 
 mongoose.connect(process.env.MONGO_URI)
@@ -22,33 +23,47 @@ app.get('/health', (req, res) => {
     res.send("Backend running");
 });
 
-app.get('/tasks', async (req, res) => {
-    const tasks = await Task.find();
+app.get("/tasks", auth, async (req, res) => {
+    const tasks = await Task.find({ userId: req.userId });
     res.json(tasks);
 });
 
 
-app.post('/tasks', async (req, res) => {
-    const { title, description } = req.body;
 
-    const newTask = new Task({ title, description: description || "" });
-    await newTask.save();
+app.post("/tasks", auth, async (req, res) => {
+  const { title, description, status } = req.body;
 
-    res.json(newTask)
-})
+  if (!title) {
+    return res.status(400).json({ message: "Title is required" });
+  }
+
+  const newTask = await Task.create({
+    title,
+    description: description || "",
+    status: status || "todo",
+    userId: req.userId
+  });
+
+  res.json(newTask);
+});
 
 
-app.patch('/tasks/:id', async (req, res) => {
-    const { status } = req.body;
+app.patch("/tasks/:id", auth, async (req, res) => {
+  const { status } = req.body;
 
-    const updatedTask = await Task.findByIdAndUpdate(
-        req.params.id,
-        { status },
-        { new: true }
-    );
+  const task = await Task.findOneAndUpdate(
+    { _id: req.params.id, userId: req.userId },
+    { status },
+    { new: true }
+  );
 
-    res.json(updatedTask);
-})
+  if (!task) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  res.json(task);
+});
+
 
 app.delete('/tasks/:id', async (req, res) => {
     await Task.findByIdAndDelete(req.params.id);
