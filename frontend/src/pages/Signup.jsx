@@ -19,9 +19,12 @@ export default function Signup({ onSwitch }) {
         return res.json();
       })
       .then(() => {
-        setSuccess(true);
         setEmail("");
         setPassword("");
+        setSuccess(true);
+        setTimeout(()=>{
+            onSwitch();
+        },500)
       })
       .catch((err) => setError(err.message));
   }
