@@ -6,10 +6,11 @@ import EditTaskModal from "../components/EditTaskModal";
 import RenameBoardModal from "../components/RenameBoardModal";
 import StatsPanel from "../components/StatsPanel";
 import SearchBar from "../components/SearchBar";
+import ActivityMonitor from "../components/ActivityMonitor";
 import API_BASE_URL from "../api.js";
 
 
-function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard, onDeleteBoard, searchQuery, onSearchChange, activeFilter, onFilterChange }) {
+function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard, onDeleteBoard, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,6 +78,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
       })
       .then((createdTask) => {
         setTasks((prev) => [...prev, createdTask]);
+        addActivity(`Task "${createdTask.title}" created in To Do`);
       })
       .catch((err) => {
         setError(err.message);
@@ -121,7 +123,11 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
         if (!res.ok) {
           throw new Error("Failed to delete task");
         }
+        const taskTitle = tasks.find((t) => t._id === id)?.title;
         setTasks((prev) => prev.filter((task) => task._id !== id));
+        if (taskTitle) {
+            addActivity(`Task "${taskTitle}" deleted`);
+        }
       })
       .catch((err) => {
         setError(err.message);
@@ -182,6 +188,9 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
 
     // Sync in background
     syncTaskStatus(draggableId, newStatus, previousTasks);
+    
+    const taskTitle = tasks.find(t => t._id === draggableId)?.title || "Task";
+    addActivity(`Task "${taskTitle}" moved to ${newStatus === 'todo' ? 'To Do' : newStatus === 'doing' ? 'Doing' : 'Done'}`);
   }
 
   const todoTasks = useMemo(
@@ -295,9 +304,12 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
           </DragDropContext>
         </div>
 
-        <div className="w-64 shrink-0">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Board Stats</h3>
-          <StatsPanel tasks={tasks} />
+        <div className="w-64 shrink-0 space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Board Stats</h3>
+            <StatsPanel tasks={tasks} />
+          </div>
+          <ActivityMonitor activities={activityLog} />
         </div>
       </div>
     </div>

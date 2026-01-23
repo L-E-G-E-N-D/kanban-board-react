@@ -138,6 +138,11 @@ function App() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [activityLog, setActivityLog] = useState([]);
+
+  function addActivity(message) {
+    setActivityLog((prev) => [message, ...prev].slice(0, 5));
+  }
 
   const activeBoard = boards.find(b => b._id === activeBoardId);
 
@@ -183,6 +188,8 @@ function App() {
                     onSearchChange={setSearchQuery}
                     activeFilter={activeFilter}
                     onFilterChange={setActiveFilter}
+                    activityLog={activityLog}
+                    addActivity={addActivity}
                     />
                 ) : (
                     <div className="flex h-full items-center justify-center">
