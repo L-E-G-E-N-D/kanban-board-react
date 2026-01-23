@@ -14,35 +14,81 @@ const Task = require('./models/Task');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
+const Board = require("./models/Board");
 const auth = require("./middleware/auth");
 
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 app.get('/health', (req, res) => {
-    res.send("Backend running");
+  res.send("Backend running");
+});
+
+// Board Routes
+app.get("/boards", auth, async (req, res) => {
+  const boards = await Board.find({ userId: req.userId });
+  res.json(boards);
+});
+
+app.post("/boards", auth, async (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+
+  const board = await Board.create({
+    name,
+    userId: req.userId,
+  });
+
+  res.json(board);
+});
+
+app.delete("/boards/:id", auth, async (req, res) => {
+  const board = await Board.findOneAndDelete({
+    _id: req.params.id,
+    userId: req.userId,
+  });
+
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  // Delete all tasks associated with this board
+  await Task.deleteMany({ boardId: req.params.id });
+
+  res.json({ message: "Board deleted successfully" });
 });
 
 app.get("/tasks", auth, async (req, res) => {
-    const tasks = await Task.find({ userId: req.userId });
-    res.json(tasks);
+  const { boardId } = req.query;
+  if (!boardId) {
+    return res.status(400).json({ message: "Board ID is required" });
+  }
+  const tasks = await Task.find({ userId: req.userId, boardId });
+  res.json(tasks);
 });
 
 
 
 app.post("/tasks", auth, async (req, res) => {
-  const { title, description, status } = req.body;
+  const { title, description, status, boardId } = req.body;
 
   if (!title) {
     return res.status(400).json({ message: "Title is required" });
+  }
+
+  if (!boardId) {
+    return res.status(400).json({ message: "Board ID is required" });
   }
 
   const newTask = await Task.create({
     title,
     description: description || "",
     status: status || "todo",
+    boardId,
     userId: req.userId
   });
 
@@ -92,24 +138,24 @@ app.delete("/tasks/:id", auth, async (req, res) => {
 
 
 app.post("/auth/signup", async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: "Missing Fields" });
-    }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-    }
+  if (!email || !password) {
+    return res.status(400).json({ message: "Missing Fields" });
+  }
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists" });
+  }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const user=await User.create({ 
-        email,
-        password: hashedPassword 
-    });
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.status(201).json({ message: "User created successfully" });
+  const user = await User.create({
+    email,
+    password: hashedPassword
+  });
+
+  res.status(201).json({ message: "User created successfully" });
 })
 
 
