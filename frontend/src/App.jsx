@@ -136,7 +136,22 @@ function App() {
     .catch((err) => console.error(err));
   }
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
+
   const activeBoard = boards.find(b => b._id === activeBoardId);
+
+  const filteredTasks = tasks.filter((task) => {
+    // Filter by Search Query
+    if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+    }
+    // Filter by Status
+    if (activeFilter !== "all" && task.status !== activeFilter) {
+        return false;
+    }
+    return true;
+  });
 
   return (
     <Routes>
@@ -158,12 +173,16 @@ function App() {
                 {activeBoard ? (
                     <Board
                     token={token}
-                    tasks={tasks}
+                    tasks={filteredTasks}
                     setTasks={setTasks}
                     activeBoardId={activeBoardId}
                     boardName={activeBoard.name}
                     onRenameBoard={handleRenameBoard}
                     onDeleteBoard={handleDeleteBoard}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    activeFilter={activeFilter}
+                    onFilterChange={setActiveFilter}
                     />
                 ) : (
                     <div className="flex h-full items-center justify-center">

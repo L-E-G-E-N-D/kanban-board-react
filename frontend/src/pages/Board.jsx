@@ -5,10 +5,11 @@ import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import RenameBoardModal from "../components/RenameBoardModal";
 import StatsPanel from "../components/StatsPanel";
+import SearchBar from "../components/SearchBar";
 import API_BASE_URL from "../api.js";
 
 
-function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard, onDeleteBoard }) {
+function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard, onDeleteBoard, searchQuery, onSearchChange, activeFilter, onFilterChange }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -228,6 +229,15 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
             Add Task
           </button>
         </div>
+      </div>
+
+      <div className="mb-6">
+        <SearchBar 
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+            activeFilter={activeFilter}
+            onFilterChange={onFilterChange}
+        />
       </div>
 
       {loading && <p className="mb-2 dark:text-gray-300">Loading tasks...</p>}

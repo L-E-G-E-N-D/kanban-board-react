@@ -1,4 +1,5 @@
 
+
 function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onLogout, theme, toggleTheme }) {
   return (
     <div className="w-64 bg-gray-900 text-white h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-10 border-r border-gray-800">
