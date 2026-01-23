@@ -95,6 +95,33 @@ function App() {
       .catch((err) => console.error(err));
   }
 
+  function handleDeleteBoard(boardId) {
+    if (!token) return;
+
+    if (!window.confirm("Are you sure you want to delete this board? All tasks in it will be lost.")) {
+      return;
+    }
+
+    fetch(`${API_BASE_URL}/boards/${boardId}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete board");
+        return res.json();
+    })
+    .then(() => {
+        const newBoards = boards.filter(b => b._id !== boardId);
+        setBoards(newBoards);
+        if (activeBoardId === boardId) {
+            setActiveBoardId(newBoards.length > 0 ? newBoards[0]._id : null);
+        }
+    })
+    .catch((err) => console.error(err));
+  }
+
   const activeBoard = boards.find(b => b._id === activeBoardId);
 
   return (
@@ -120,6 +147,7 @@ function App() {
                     activeBoardId={activeBoardId}
                     boardName={activeBoard.name}
                     onRenameBoard={handleRenameBoard}
+                    onDeleteBoard={handleDeleteBoard}
                     />
                 ) : (
                     <div className="flex h-full items-center justify-center">
