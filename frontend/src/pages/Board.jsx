@@ -215,15 +215,15 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3 group">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
         </div>
         
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-semibold text-sm border border-gray-300 dark:border-gray-600">
+            <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-semibold text-sm border border-slate-300 dark:border-slate-600">
                 {user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
             </div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">
                 {user?.name || user?.email || "User"}
             </span>
           </div>
@@ -239,7 +239,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         />
       </div>
 
-      {loading && <p className="mb-2 dark:text-gray-300">Loading tasks...</p>}
+      {loading && <p className="mb-2 dark:text-slate-300">Loading tasks...</p>}
       {error && <p className="mb-2 text-red-500 dark:text-red-400">{error}</p>}
 
       <AddTaskModal
@@ -293,7 +293,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
 
         <div className="w-64 shrink-0 space-y-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Board Stats</h3>
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Board Stats</h3>
             <StatsPanel tasks={tasks} />
           </div>
           <ActivityMonitor activities={activityLog} />
