@@ -4,6 +4,7 @@ import Column from "../components/Column";
 import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import RenameBoardModal from "../components/RenameBoardModal";
+import StatsPanel from "../components/StatsPanel";
 import API_BASE_URL from "../api.js";
 
 
@@ -255,31 +256,40 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
         currentName={boardName}
       />
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-2">
-          <Column
-            title="To Do"
-            tasks={todoTasks}
-            onMove={syncTaskStatus}
-            onDelete={deleteTask}
-            onEdit={openEdit}
-          />
-          <Column
-            title="Doing"
-            tasks={doingTasks}
-            onMove={syncTaskStatus}
-            onDelete={deleteTask}
-            onEdit={openEdit}
-          />
-          <Column
-            title="Done"
-            tasks={doneTasks}
-            onMove={syncTaskStatus}
-            onDelete={deleteTask}
-            onEdit={openEdit}
-          />
+      <div className="flex gap-6 items-start">
+        <div className="flex-1 overflow-x-auto pb-4">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex gap-4 sm:gap-6">
+              <Column
+                title="To Do"
+                tasks={todoTasks}
+                onMove={syncTaskStatus}
+                onDelete={deleteTask}
+                onEdit={openEdit}
+              />
+              <Column
+                title="Doing"
+                tasks={doingTasks}
+                onMove={syncTaskStatus}
+                onDelete={deleteTask}
+                onEdit={openEdit}
+              />
+              <Column
+                title="Done"
+                tasks={doneTasks}
+                onMove={syncTaskStatus}
+                onDelete={deleteTask}
+                onEdit={openEdit}
+              />
+            </div>
+          </DragDropContext>
         </div>
-      </DragDropContext>
+
+        <div className="w-64 shrink-0">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Board Stats</h3>
+          <StatsPanel tasks={tasks} />
+        </div>
+      </div>
     </div>
   );
 }
