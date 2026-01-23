@@ -5,7 +5,14 @@ import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import API_BASE_URL from "../api.js";
 
-function Board({ token, onLogout, tasks, setTasks }) {
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { DragDropContext } from "@hello-pangea/dnd";
+import Column from "../components/Column";
+import AddTaskModal from "../components/AddTaskModal";
+import EditTaskModal from "../components/EditTaskModal";
+import API_BASE_URL from "../api.js";
+
+function Board({ token, tasks, setTasks, activeBoardId, boardName }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,7 +30,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
   );
 
   useEffect(() => {
-    if (!token) {
+    if (!token || !activeBoardId) {
       setTasks([]);
       setLoading(false);
       return;
@@ -31,7 +38,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
     setLoading(true);
     setError(null);
 
-    fetch(`${API_BASE_URL}/tasks`, {
+    fetch(`${API_BASE_URL}/tasks?boardId=${activeBoardId}`, {
       headers: authHeaders,
     })
       .then((res) => {
@@ -48,10 +55,11 @@ function Board({ token, onLogout, tasks, setTasks }) {
         setError(err.message);
         setLoading(false);
       });
-  }, [token]);
+  }, [token, activeBoardId]);
 
   const addTask = useCallback((title, description = "") => {
     if (title.trim() === "") return;
+    if (!activeBoardId) return;
 
     setError(null);
 
@@ -61,7 +69,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
         ...authHeaders,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({ title, description, boardId: activeBoardId }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -75,7 +83,7 @@ function Board({ token, onLogout, tasks, setTasks }) {
       .catch((err) => {
         setError(err.message);
       });
-  }, [authHeaders]);
+  }, [authHeaders, activeBoardId]);
 
   const syncTaskStatus = useCallback(
     (id, newStatus, previousTasks) => {
@@ -192,28 +200,21 @@ function Board({ token, onLogout, tasks, setTasks }) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <h1 className="text-3xl font-semibold text-gray-800">Kanban Board</h1>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition shadow-sm"
-            >
-              Add Task
-            </button>
-            <button
-              onClick={onLogout}
-              className="text-sm text-gray-600 hover:text-red-600 hover:underline"
-            >
-              Logout
-            </button>
-          </div>
+    <div className="max-w-6xl mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <h1 className="text-3xl font-semibold text-gray-800">{boardName || "Kanban Board"}</h1>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition shadow-sm"
+          >
+            Add Task
+          </button>
         </div>
+      </div>
 
-        {loading && <p className="mb-2">Loading tasks...</p>}
-        {error && <p className="mb-2 text-red-500">{error}</p>}
+      {loading && <p className="mb-2">Loading tasks...</p>}
+      {error && <p className="mb-2 text-red-500">{error}</p>}
 
       <AddTaskModal
         isOpen={isModalOpen}
@@ -232,32 +233,31 @@ function Board({ token, onLogout, tasks, setTasks }) {
         }
       />
 
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-2">
-            <Column
-              title="To Do"
-              tasks={todoTasks}
-              onMove={syncTaskStatus}
-              onDelete={deleteTask}
-              onEdit={openEdit}
-            />
-            <Column
-              title="Doing"
-              tasks={doingTasks}
-              onMove={syncTaskStatus}
-              onDelete={deleteTask}
-              onEdit={openEdit}
-            />
-            <Column
-              title="Done"
-              tasks={doneTasks}
-              onMove={syncTaskStatus}
-              onDelete={deleteTask}
-              onEdit={openEdit}
-            />
-          </div>
-        </DragDropContext>
-      </div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-2">
+          <Column
+            title="To Do"
+            tasks={todoTasks}
+            onMove={syncTaskStatus}
+            onDelete={deleteTask}
+            onEdit={openEdit}
+          />
+          <Column
+            title="Doing"
+            tasks={doingTasks}
+            onMove={syncTaskStatus}
+            onDelete={deleteTask}
+            onEdit={openEdit}
+          />
+          <Column
+            title="Done"
+            tasks={doneTasks}
+            onMove={syncTaskStatus}
+            onDelete={deleteTask}
+            onEdit={openEdit}
+          />
+        </div>
+      </DragDropContext>
     </div>
   );
 }
