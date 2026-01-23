@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Board from "./pages/Board";
 import Sidebar from "./components/Sidebar";
 import CreateBoardModal from "./components/CreateBoardModal";
+import RenameBoardModal from "./components/RenameBoardModal";
 import API_BASE_URL from "./api.js";
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
   const [boards, setBoards] = useState([]);
   const [activeBoardId, setActiveBoardId] = useState(localStorage.getItem("activeBoardId"));
   const [isCreateBoardOpen, setIsCreateBoardOpen] = useState(false);
+  const [isRenameBoardOpen, setIsRenameBoardOpen] = useState(false);
+  const [boardToRename, setBoardToRename] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
@@ -184,6 +187,11 @@ function App() {
                 activeBoardId={activeBoardId}
                 onBoardSelect={setActiveBoardId}
                 onNewBoard={() => setIsCreateBoardOpen(true)}
+                onEditBoard={(board) => {
+                    setBoardToRename(board);
+                    setIsRenameBoardOpen(true);
+                }}
+                onDeleteBoard={handleDeleteBoard}
                 onLogout={logout}
                 theme={theme}
                 toggleTheme={toggleTheme}
@@ -197,8 +205,6 @@ function App() {
                     setTasks={setTasks}
                     activeBoardId={activeBoardId}
                     boardName={activeBoard.name}
-                    onRenameBoard={handleRenameBoard}
-                    onDeleteBoard={handleDeleteBoard}
                     searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
                     activeFilter={activeFilter}
@@ -226,6 +232,21 @@ function App() {
                 isOpen={isCreateBoardOpen}
                 onClose={() => setIsCreateBoardOpen(false)}
                 onCreateBoard={handleCreateBoard}
+            />
+            <RenameBoardModal 
+                isOpen={isRenameBoardOpen}
+                onClose={() => {
+                    setIsRenameBoardOpen(false);
+                    setBoardToRename(null);
+                }}
+                onRename={(newName) => {
+                    if (boardToRename) {
+                        handleRenameBoard(boardToRename._id, newName);
+                        setIsRenameBoardOpen(false);
+                        setBoardToRename(null);
+                    }
+                }}
+                currentName={boardToRename?.name || ""}
             />
           </ProtectedRoute>
         }
