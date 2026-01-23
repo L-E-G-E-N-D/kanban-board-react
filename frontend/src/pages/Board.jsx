@@ -5,12 +5,6 @@ import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import API_BASE_URL from "../api.js";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { DragDropContext } from "@hello-pangea/dnd";
-import Column from "../components/Column";
-import AddTaskModal from "../components/AddTaskModal";
-import EditTaskModal from "../components/EditTaskModal";
-import API_BASE_URL from "../api.js";
 
 function Board({ token, tasks, setTasks, activeBoardId, boardName }) {
   const [loading, setLoading] = useState(false);
