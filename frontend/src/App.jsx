@@ -196,7 +196,7 @@ function App() {
                 theme={theme}
                 toggleTheme={toggleTheme}
               />
-              <div className="flex-1 ml-64 p-6 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen transition-colors duration-200">
+              <div className="flex-1 ml-60 p-8 bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors duration-200">
                 {activeBoard ? (
                     <Board
                     token={token}

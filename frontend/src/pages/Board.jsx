@@ -212,15 +212,15 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   );
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3 group">
-          <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100">{boardName || "Kanban Board"}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
         </div>
         
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+            <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-semibold text-sm border border-gray-300 dark:border-gray-600">
                 {user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
             </div>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">

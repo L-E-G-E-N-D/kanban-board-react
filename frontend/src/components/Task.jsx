@@ -19,28 +19,28 @@ function Task({ task, index, onDelete, onEdit }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 shadow-sm cursor-grab transition-transform transition-shadow
-            ${snapshot.isDragging ? "bg-blue-50 dark:bg-gray-600 shadow-md scale-[1.01]" : "hover:shadow-md hover:-translate-y-0.5"}
+          className={`group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-sm cursor-grab transition-all
+            ${snapshot.isDragging ? "shadow-lg ring-2 ring-gray-400 dark:ring-gray-600 rotate-2" : "hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600"}
           `}
         >
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">{task.title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug">{task.title}</h3>
               {task.description && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                   {task.description}
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={handleEdit}
-                className="flex-shrink-0 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-600 rounded p-1 transition"
+                className="flex-shrink-0 text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 title="Edit task"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
+                  className="h-3.5 w-3.5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -55,12 +55,12 @@ function Task({ task, index, onDelete, onEdit }) {
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-gray-600 rounded p-1 transition"
+                className="flex-shrink-0 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 title="Delete task"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
+                  className="h-3.5 w-3.5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

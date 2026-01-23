@@ -26,11 +26,11 @@ function RenameBoardModal({ isOpen, onClose, onRename, currentName }) {
       onClick={onClose}
     >
       <div 
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md transition-colors"
+        className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md transition-colors border border-gray-200 dark:border-gray-800"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Rename Board</h2>
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-800">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Rename Board</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
@@ -66,7 +66,7 @@ function RenameBoardModal({ isOpen, onClose, onRename, currentName }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter new board name"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-800 dark:text-white"
               required
               autoFocus
               autoComplete="off"
@@ -77,13 +77,13 @@ function RenameBoardModal({ isOpen, onClose, onRename, currentName }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+              className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm dark:bg-blue-500 dark:hover:bg-blue-600"
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition shadow-sm dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               Save
             </button>
