@@ -202,7 +202,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
           <h1 className="text-3xl font-semibold text-gray-800">{boardName || "Kanban Board"}</h1>
           <button 
             onClick={() => setIsRenameOpen(true)}
-            className="opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-blue-600 p-1"
+            className="text-gray-400 hover:text-blue-600 p-1"
             title="Rename Board"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
