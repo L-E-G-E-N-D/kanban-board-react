@@ -10,13 +10,19 @@ import ActivityMonitor from "../components/ActivityMonitor";
 import API_BASE_URL from "../api.js";
 
 
-function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard, onDeleteBoard, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity }) {
+function Board({ token, user, tasks, setTasks, activeBoardId, boardName, onRenameBoard, onDeleteBoard, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [targetStatus, setTargetStatus] = useState("todo");
+
+  const openAddTask = useCallback((status) => {
+    setTargetStatus(status);
+    setIsModalOpen(true);
+  }, []);
 
   const authHeaders = useMemo(
     () =>
@@ -68,7 +74,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
         ...authHeaders,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, description, boardId: activeBoardId }),
+      body: JSON.stringify({ title, description, boardId: activeBoardId, status: targetStatus }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -78,7 +84,8 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
       })
       .then((createdTask) => {
         setTasks((prev) => [...prev, createdTask]);
-        addActivity(`Task "${createdTask.title}" created in To Do`);
+        const statusLabel = targetStatus === 'todo' ? 'To Do' : targetStatus === 'doing' ? 'Doing' : 'Done';
+        addActivity(`Task "${createdTask.title}" created in ${statusLabel}`);
       })
       .catch((err) => {
         setError(err.message);
@@ -230,13 +237,16 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
             </svg>
           </button>
         </div>
+        
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition shadow-sm dark:bg-blue-500 dark:hover:bg-blue-600"
-          >
-            Add Task
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+                {user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
+            </div>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">
+                {user?.name || user?.email || "User"}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -285,6 +295,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
                 onMove={syncTaskStatus}
                 onDelete={deleteTask}
                 onEdit={openEdit}
+                onAdd={() => openAddTask("todo")}
               />
               <Column
                 title="Doing"
@@ -292,6 +303,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
                 onMove={syncTaskStatus}
                 onDelete={deleteTask}
                 onEdit={openEdit}
+                onAdd={() => openAddTask("doing")}
               />
               <Column
                 title="Done"
@@ -299,6 +311,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
                 onMove={syncTaskStatus}
                 onDelete={deleteTask}
                 onEdit={openEdit}
+                onAdd={() => openAddTask("done")}
               />
             </div>
           </DragDropContext>

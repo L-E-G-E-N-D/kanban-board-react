@@ -157,7 +157,7 @@ app.delete("/tasks/:id", auth, async (req, res) => {
 
 
 app.post("/auth/signup", async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: "Missing Fields" });
@@ -170,6 +170,7 @@ app.post("/auth/signup", async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await User.create({
+    name: name || "",
     email,
     password: hashedPassword
   });
@@ -197,7 +198,14 @@ app.post("/auth/login", async (req, res) => {
     { expiresIn: "7d" }
   );
 
-  res.json({ token });
+  res.json({
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email
+    }
+  });
 });
 
 

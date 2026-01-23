@@ -24,7 +24,7 @@ export default function Login({ onLogin, onSwitch }) {
       })
       .then((data) => {
         localStorage.setItem("token", data.token);
-        onLogin(data.token);
+        onLogin(data.token, data.user);
       })
       .catch((err) => {
         setError(err.message);

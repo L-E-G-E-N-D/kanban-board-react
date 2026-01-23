@@ -12,6 +12,10 @@ function App() {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [boards, setBoards] = useState([]);
   const [activeBoardId, setActiveBoardId] = useState(localStorage.getItem("activeBoardId"));
   const [isCreateBoardOpen, setIsCreateBoardOpen] = useState(false);
@@ -29,6 +33,14 @@ function App() {
   function toggleTheme() {
     setTheme(prev => prev === "light" ? "dark" : "light");
   }
+
+  useEffect(() => {
+    if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+    } else {
+        localStorage.removeItem("user");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!token) return;
@@ -58,7 +70,9 @@ function App() {
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("activeBoardId");
+    localStorage.removeItem("user");
     setToken(null);
+    setUser(null);
     setActiveBoardId(null);
     setTasks([]);
     navigate("/login");
@@ -178,6 +192,7 @@ function App() {
                 {activeBoard ? (
                     <Board
                     token={token}
+                    user={user}
                     tasks={filteredTasks}
                     setTasks={setTasks}
                     activeBoardId={activeBoardId}
@@ -219,8 +234,9 @@ function App() {
         path="/login"
         element={
           <Login
-            onLogin={(tok) => {
+            onLogin={(tok, userData) => {
               setToken(tok);
+              setUser(userData);
               navigate("/");
             }}
             onSwitch={() => navigate("/signup")}
