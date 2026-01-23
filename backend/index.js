@@ -46,6 +46,25 @@ app.post("/boards", auth, async (req, res) => {
   res.json(board);
 });
 
+app.patch("/boards/:id", auth, async (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+
+  const board = await Board.findOneAndUpdate(
+    { _id: req.params.id, userId: req.userId },
+    { name },
+    { new: true }
+  );
+
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  res.json(board);
+});
+
 app.delete("/boards/:id", auth, async (req, res) => {
   const board = await Board.findOneAndDelete({
     _id: req.params.id,

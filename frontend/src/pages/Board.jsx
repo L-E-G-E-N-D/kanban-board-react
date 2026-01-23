@@ -3,14 +3,16 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import Column from "../components/Column";
 import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
+import RenameBoardModal from "../components/RenameBoardModal";
 import API_BASE_URL from "../api.js";
 
 
-function Board({ token, tasks, setTasks, activeBoardId, boardName }) {
+function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
   const authHeaders = useMemo(
@@ -196,7 +198,18 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName }) {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <h1 className="text-3xl font-semibold text-gray-800">{boardName || "Kanban Board"}</h1>
+        <div className="flex items-center gap-3 group">
+          <h1 className="text-3xl font-semibold text-gray-800">{boardName || "Kanban Board"}</h1>
+          <button 
+            onClick={() => setIsRenameOpen(true)}
+            className="opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-blue-600 p-1"
+            title="Rename Board"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+          </button>
+        </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsModalOpen(true)}
@@ -225,6 +238,12 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName }) {
         onSave={(title, description) =>
           updateTask(editingTask._id, { title, description })
         }
+      />
+      <RenameBoardModal 
+        isOpen={isRenameOpen}
+        onClose={() => setIsRenameOpen(false)}
+        onRename={(newName) => onRenameBoard(activeBoardId, newName)}
+        currentName={boardName}
       />
 
       <DragDropContext onDragEnd={onDragEnd}>

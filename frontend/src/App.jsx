@@ -72,6 +72,29 @@ function App() {
       .catch((err) => console.error(err));
   }
   
+  function handleRenameBoard(boardId, newName) {
+    if (!token) return;
+
+    fetch(`${API_BASE_URL}/boards/${boardId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name: newName }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to rename board");
+        return res.json();
+      })
+      .then((updatedBoard) => {
+        setBoards((prev) =>
+          prev.map((b) => (b._id === boardId ? updatedBoard : b))
+        );
+      })
+      .catch((err) => console.error(err));
+  }
+
   const activeBoard = boards.find(b => b._id === activeBoardId);
 
   return (
@@ -96,6 +119,7 @@ function App() {
                     setTasks={setTasks}
                     activeBoardId={activeBoardId}
                     boardName={activeBoard.name}
+                    onRenameBoard={handleRenameBoard}
                     />
                 ) : (
                     <div className="flex h-full items-center justify-center">
