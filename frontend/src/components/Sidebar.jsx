@@ -4,7 +4,9 @@ function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard
   return (
     <div className="w-60 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-10 border-r border-slate-200 dark:border-slate-800">
       <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Kanban</h1>
+        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Kanban<span className="text-blue-600">Board</span>
+        </h1>
       </div>
 
       <div className="flex-1 py-4">
