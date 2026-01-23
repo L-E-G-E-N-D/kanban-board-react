@@ -200,10 +200,10 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3 group">
-          <h1 className="text-3xl font-semibold text-gray-800">{boardName || "Kanban Board"}</h1>
+          <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100">{boardName || "Kanban Board"}</h1>
           <button 
             onClick={() => setIsRenameOpen(true)}
-            className="text-gray-400 hover:text-blue-600 p-1"
+            className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-1"
             title="Rename Board"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -212,7 +212,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
           </button>
           <button 
             onClick={() => onDeleteBoard(activeBoardId)}
-            className="text-gray-400 hover:text-red-600 p-1"
+            className="text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-1"
             title="Delete Board"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -223,15 +223,15 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition shadow-sm"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition shadow-sm dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             Add Task
           </button>
         </div>
       </div>
 
-      {loading && <p className="mb-2">Loading tasks...</p>}
-      {error && <p className="mb-2 text-red-500">{error}</p>}
+      {loading && <p className="mb-2 dark:text-gray-300">Loading tasks...</p>}
+      {error && <p className="mb-2 text-red-500 dark:text-red-400">{error}</p>}
 
       <AddTaskModal
         isOpen={isModalOpen}
@@ -286,7 +286,7 @@ function Board({ token, tasks, setTasks, activeBoardId, boardName, onRenameBoard
         </div>
 
         <div className="w-64 shrink-0">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Board Stats</h3>
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Board Stats</h3>
           <StatsPanel tasks={tasks} />
         </div>
       </div>

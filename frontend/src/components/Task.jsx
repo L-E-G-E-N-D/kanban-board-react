@@ -19,15 +19,15 @@ function Task({ task, index, onDelete, onEdit }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white border border-gray-200 rounded-lg p-3 shadow-sm cursor-grab transition-transform transition-shadow
-            ${snapshot.isDragging ? "bg-blue-50 shadow-md scale-[1.01]" : "hover:shadow-md hover:-translate-y-0.5"}
+          className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 shadow-sm cursor-grab transition-transform transition-shadow
+            ${snapshot.isDragging ? "bg-blue-50 dark:bg-gray-600 shadow-md scale-[1.01]" : "hover:shadow-md hover:-translate-y-0.5"}
           `}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-gray-800 mb-1">{task.title}</h3>
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 mb-1">{task.title}</h3>
               {task.description && (
-                <p className="text-sm text-gray-600 line-clamp-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                   {task.description}
                 </p>
               )}
@@ -35,7 +35,7 @@ function Task({ task, index, onDelete, onEdit }) {
             <div className="flex items-center gap-1">
               <button
                 onClick={handleEdit}
-                className="flex-shrink-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded p-1 transition"
+                className="flex-shrink-0 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-600 rounded p-1 transition"
                 title="Edit task"
               >
                 <svg
@@ -55,7 +55,7 @@ function Task({ task, index, onDelete, onEdit }) {
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
+                className="flex-shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-gray-600 rounded p-1 transition"
                 title="Delete task"
               >
                 <svg

@@ -6,8 +6,8 @@ import { Droppable } from "@hello-pangea/dnd";
 function Column({ title, tasks, onMove, onDelete, onEdit }) {
     const status = title.toLowerCase().replace(" ", "");
     return (
-      <div className="bg-white rounded-xl shadow-sm p-4 w-72 sm:w-80 border border-gray-200">
-        <h2 className="text-xs font-semibold mb-3 text-slate-700 tracking-[0.08em] uppercase">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 w-72 sm:w-80 border border-gray-200 dark:border-gray-700 transition-colors">
+        <h2 className="text-xs font-semibold mb-3 text-slate-700 dark:text-slate-300 tracking-[0.08em] uppercase">
           {title}
         </h2>
         <Droppable droppableId={status}>

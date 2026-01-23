@@ -28,14 +28,14 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
       onClick={handleClose}
     >
       <div 
-        className="bg-white rounded-xl shadow-2xl w-full max-w-md"
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md transition-colors"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Add New Task</h2>
+        <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Add New Task</h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
           <div className="mb-4">
             <label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Title <span className="text-red-500">*</span>
             </label>
@@ -68,7 +68,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter task title"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               required
               autoFocus
               autoComplete="off"
@@ -78,7 +78,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
           <div className="mb-6">
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Description
             </label>
@@ -88,7 +88,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter task description (optional)"
               rows={4}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none dark:bg-gray-700 dark:text-white"
               autoComplete="off"
             />
           </div>
@@ -97,13 +97,13 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Add Task
             </button>

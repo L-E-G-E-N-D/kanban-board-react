@@ -15,6 +15,20 @@ function App() {
   const [boards, setBoards] = useState([]);
   const [activeBoardId, setActiveBoardId] = useState(localStorage.getItem("activeBoardId"));
   const [isCreateBoardOpen, setIsCreateBoardOpen] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  function toggleTheme() {
+    setTheme(prev => prev === "light" ? "dark" : "light");
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -137,8 +151,10 @@ function App() {
                 onBoardSelect={setActiveBoardId}
                 onNewBoard={() => setIsCreateBoardOpen(true)}
                 onLogout={logout}
+                theme={theme}
+                toggleTheme={toggleTheme}
               />
-              <div className="flex-1 ml-64 p-6 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 min-h-screen">
+              <div className="flex-1 ml-64 p-6 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen transition-colors duration-200">
                 {activeBoard ? (
                     <Board
                     token={token}
