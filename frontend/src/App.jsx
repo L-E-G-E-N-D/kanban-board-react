@@ -23,6 +23,7 @@ function App() {
   const [isRenameBoardOpen, setIsRenameBoardOpen] = useState(false);
   const [boardToRename, setBoardToRename] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -183,6 +184,8 @@ function App() {
           <ProtectedRoute token={token}>
             <div className="flex">
               <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
                 boards={boards}
                 activeBoardId={activeBoardId}
                 onBoardSelect={setActiveBoardId}
@@ -196,7 +199,20 @@ function App() {
                 theme={theme}
                 toggleTheme={toggleTheme}
               />
-              <div className="flex-1 ml-60 p-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors duration-200">
+              <div className={`flex-1 p-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-all duration-300 ease-in-out ${
+                isSidebarOpen ? "md:ml-60" : "md:ml-0"
+              }`}>
+                <div className="mb-4">
+                  <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                    aria-label="Toggle Sidebar"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                </div>
                 {activeBoard ? (
                     <Board
                     token={token}
