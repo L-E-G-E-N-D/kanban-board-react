@@ -69,6 +69,42 @@ app.patch("/boards/:id", auth, async (req, res) => {
   res.json(board);
 });
 
+app.post("/boards/:id/invite", auth, async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  const board = await Board.findOne({ _id: req.params.id });
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  // Allow owner or existing invitees to invite others?
+  // Prompt says "Allow access if req.userId === board.ownerId OR board.members.includes(req.userId)"
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  const userToInvite = await User.findOne({ email });
+  if (!userToInvite) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (board.members.includes(userToInvite._id)) {
+    return res.status(400).json({ message: "User is already a member" });
+  }
+
+  if (board.ownerId.toString() === userToInvite._id.toString()) {
+    return res.status(400).json({ message: "User is the owner" });
+  }
+
+  board.members.push(userToInvite._id);
+  await board.save();
+
+  res.json(board);
+});
+
 app.delete("/boards/:id", auth, async (req, res) => {
   const board = await Board.findOne({ _id: req.params.id });
 
