@@ -18,6 +18,8 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [targetStatus, setTargetStatus] = useState("todo");
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const openAddTask = useCallback((status) => {
     setTargetStatus(status);
@@ -56,6 +58,33 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   };
 
 
+
+  useEffect(() => {
+    if (!token) return;
+
+    // Fetch notifications
+    fetch(`${API_BASE_URL}/notifications`, {
+      headers: authHeaders
+    })
+    .then(res => res.json())
+    .then(data => setNotifications(data))
+    .catch(err => console.error("Failed to fetch notifications", err));
+  }, [token, authHeaders]);
+
+  const markAsRead = async (id) => {
+    try {
+      await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+        method: 'PATCH',
+        headers: authHeaders
+      });
+      
+      setNotifications(prev => prev.map(n => 
+        n._id === id ? { ...n, isRead: true } : n
+      ));
+    } catch (err) {
+      console.error("Failed to mark notification as read", err);
+    }
+  };
 
   useEffect(() => {
     if (!token || !activeBoardId) {
@@ -261,6 +290,53 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
                 Share
             </button>
           <div className="flex items-center gap-2">
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full relative transition"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {notifications.some(n => !n.isRead) && (
+                  <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                  <div className="p-3 border-b border-gray-200 dark:border-gray-700 font-semibold text-gray-900 dark:text-white flex justify-between items-center">
+                    <h3>Notifications</h3>
+                    <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">
+                      {notifications.filter(n => !n.isRead).length} new
+                    </span>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        No notifications
+                      </div>
+                    ) : (
+                      notifications.map(notification => (
+                        <div 
+                          key={notification._id} 
+                          onClick={() => markAsRead(notification._id)}
+                          className={`p-3 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-750 transition cursor-pointer ${!notification.isRead ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                        >
+                          <p className={`text-sm text-gray-800 dark:text-gray-200 ${!notification.isRead ? 'font-medium' : ''}`}>
+                            {notification.message}
+                          </p>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 block">
+                            {new Date(notification.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-semibold text-sm border border-slate-300 dark:border-slate-600">
                 {user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
             </div>

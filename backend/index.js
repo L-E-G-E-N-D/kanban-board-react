@@ -15,6 +15,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Board = require("./models/Board");
+const Notification = require("./models/Notification");
 const auth = require("./middleware/auth");
 
 
@@ -101,6 +102,14 @@ app.post("/boards/:id/invite", auth, async (req, res) => {
 
   board.members.push(userToInvite._id);
   await board.save();
+
+  // Create notification
+  await Notification.create({
+    userId: userToInvite._id,
+    message: `You have been invited to join the board "${board.name}"`,
+    type: 'invite',
+    relatedId: board._id
+  });
 
   res.json(board);
 });
@@ -233,6 +242,23 @@ app.delete("/tasks/:id", auth, async (req, res) => {
 });
 
 
+
+app.get("/notifications", auth, async (req, res) => {
+  const notifications = await Notification.find({ userId: req.userId }).sort({ createdAt: -1 });
+  res.json(notifications);
+});
+
+app.patch("/notifications/:id/read", auth, async (req, res) => {
+  const notification = await Notification.findOne({ _id: req.params.id, userId: req.userId });
+  if (!notification) {
+    return res.status(404).json({ message: "Notification not found" });
+  }
+
+  notification.isRead = true;
+  await notification.save();
+
+  res.json(notification);
+});
 
 app.post("/auth/signup", async (req, res) => {
   const { name, email, password } = req.body;
