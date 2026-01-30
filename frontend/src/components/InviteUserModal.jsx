@@ -40,7 +40,7 @@ function InviteUserModal({ isOpen, onClose, onInvite }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-800">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Invite Collaborator</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Share Board</h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
@@ -97,7 +97,7 @@ function InviteUserModal({ isOpen, onClose, onInvite }) {
               disabled={sending}
               className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition shadow-sm dark:bg-gray-700 dark:hover:bg-gray-600 disabled:opacity-50"
             >
-              {sending ? "Inviting..." : "Invite"}
+              {sending ? "Sharing..." : "Share"}
             </button>
           </div>
         </form>
