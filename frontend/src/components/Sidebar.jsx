@@ -1,6 +1,6 @@
 
 
-function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard, onDeleteBoard, onLogout, theme, toggleTheme, isOpen, onClose }) {
+function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard, onDeleteBoard, onLogout, theme, toggleTheme, isOpen, onClose, user }) {
   return (
     <>
       {/* Mobile Overlay */}
@@ -35,7 +35,12 @@ function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard
                 }`}
                 onClick={() => onBoardSelect(board._id)}
               >
-                <div className="truncate font-medium flex-1 text-sm">{board.name}</div>
+                <div className="truncate font-medium flex-1 text-sm flex items-center gap-2">
+                    {board.name}
+                    {user && board.ownerId && user.id !== board.ownerId && (
+                         <span className="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 px-1.5 py-0.5 rounded-full font-medium">Shared</span>
+                    )}
+                </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
                         onClick={(e) => { e.stopPropagation(); onEditBoard(board); }}

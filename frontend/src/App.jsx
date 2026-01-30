@@ -198,6 +198,7 @@ function App() {
                 onLogout={logout}
                 theme={theme}
                 toggleTheme={toggleTheme}
+                user={user}
               />
               <div className={`flex-1 p-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-all duration-300 ease-in-out ${
                 isSidebarOpen ? "md:ml-60" : "md:ml-0"
