@@ -28,7 +28,7 @@ app.get('/health', (req, res) => {
 
 // Board Routes
 app.get("/boards", auth, async (req, res) => {
-  const boards = await Board.find({ userId: req.userId });
+  const boards = await Board.find({ ownerId: req.userId });
   res.json(boards);
 });
 
@@ -40,7 +40,7 @@ app.post("/boards", auth, async (req, res) => {
 
   const board = await Board.create({
     name,
-    userId: req.userId,
+    ownerId: req.userId,
   });
 
   res.json(board);
@@ -53,7 +53,7 @@ app.patch("/boards/:id", auth, async (req, res) => {
   }
 
   const board = await Board.findOneAndUpdate(
-    { _id: req.params.id, userId: req.userId },
+    { _id: req.params.id, ownerId: req.userId },
     { name },
     { new: true }
   );
@@ -68,7 +68,7 @@ app.patch("/boards/:id", auth, async (req, res) => {
 app.delete("/boards/:id", auth, async (req, res) => {
   const board = await Board.findOneAndDelete({
     _id: req.params.id,
-    userId: req.userId,
+    ownerId: req.userId,
   });
 
   if (!board) {
