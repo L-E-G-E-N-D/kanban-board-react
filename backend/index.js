@@ -28,7 +28,9 @@ app.get('/health', (req, res) => {
 
 // Board Routes
 app.get("/boards", auth, async (req, res) => {
-  const boards = await Board.find({ ownerId: req.userId });
+  const boards = await Board.find({
+    $or: [{ ownerId: req.userId }, { members: req.userId }],
+  });
   res.json(boards);
 });
 
@@ -52,28 +54,33 @@ app.patch("/boards/:id", auth, async (req, res) => {
     return res.status(400).json({ message: "Name is required" });
   }
 
-  const board = await Board.findOneAndUpdate(
-    { _id: req.params.id, ownerId: req.userId },
-    { name },
-    { new: true }
-  );
-
+  const board = await Board.findOne({ _id: req.params.id });
   if (!board) {
     return res.status(404).json({ message: "Board not found" });
   }
+
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  board.name = name;
+  await board.save();
 
   res.json(board);
 });
 
 app.delete("/boards/:id", auth, async (req, res) => {
-  const board = await Board.findOneAndDelete({
-    _id: req.params.id,
-    ownerId: req.userId,
-  });
+  const board = await Board.findOne({ _id: req.params.id });
 
   if (!board) {
     return res.status(404).json({ message: "Board not found" });
   }
+
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  await Board.deleteOne({ _id: req.params.id });
 
   // Delete all tasks associated with this board
   await Task.deleteMany({ boardId: req.params.id });
@@ -86,7 +93,17 @@ app.get("/tasks", auth, async (req, res) => {
   if (!boardId) {
     return res.status(400).json({ message: "Board ID is required" });
   }
-  const tasks = await Task.find({ userId: req.userId, boardId });
+
+  const board = await Board.findOne({ _id: boardId });
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  const tasks = await Task.find({ boardId });
   res.json(tasks);
 });
 
@@ -101,6 +118,15 @@ app.post("/tasks", auth, async (req, res) => {
 
   if (!boardId) {
     return res.status(400).json({ message: "Board ID is required" });
+  }
+
+  const board = await Board.findOne({ _id: boardId });
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
   }
 
   const newTask = await Task.create({
@@ -122,35 +148,47 @@ app.patch("/tasks/:id", auth, async (req, res) => {
     return res.status(400).json({ message: "Title cannot be empty" });
   }
 
-  const updates = {};
-  if (status !== undefined) updates.status = status;
-  if (title !== undefined) updates.title = title;
-  if (description !== undefined) updates.description = description;
-
-  const task = await Task.findOneAndUpdate(
-    { _id: req.params.id, userId: req.userId },
-    updates,
-    { new: true }
-  );
-
+  const task = await Task.findOne({ _id: req.params.id });
   if (!task) {
     return res.status(404).json({ message: "Task not found" });
   }
+
+  const board = await Board.findOne({ _id: task.boardId });
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  if (status !== undefined) task.status = status;
+  if (title !== undefined) task.title = title;
+  if (description !== undefined) task.description = description;
+
+  await task.save();
 
   res.json(task);
 });
 
 
 app.delete("/tasks/:id", auth, async (req, res) => {
-  const task = await Task.findOneAndDelete({
-    _id: req.params.id,
-    userId: req.userId,
-  });
-
+  const task = await Task.findOne({ _id: req.params.id });
   if (!task) {
     return res.status(404).json({ message: "Task not found" });
   }
 
+  const board = await Board.findOne({ _id: task.boardId });
+  if (!board) {
+    // If board is missing, maybe we should allow delete? Or not? Safe to block.
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  await Task.deleteOne({ _id: req.params.id });
   res.json({ message: "Task deleted successfully" });
 });
 
