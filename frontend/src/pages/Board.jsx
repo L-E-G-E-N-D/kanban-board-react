@@ -3,6 +3,7 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import Column from "../components/Column";
 import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
+import InviteUserModal from "../components/InviteUserModal";
 import StatsPanel from "../components/StatsPanel";
 import SearchBar from "../components/SearchBar";
 import ActivityMonitor from "../components/ActivityMonitor";
@@ -14,6 +15,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [targetStatus, setTargetStatus] = useState("todo");
 
@@ -31,6 +33,29 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         : {},
     [token]
   );
+  
+  const handleInvite = async (email) => {
+      if (!activeBoardId) return;
+      
+      const res = await fetch(`${API_BASE_URL}/boards/${activeBoardId}/invite`, {
+          method: "POST",
+          headers: {
+              ...authHeaders,
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+          throw new Error(data.message || "Failed to invite user");
+      }
+      
+      addActivity(`Invited ${email} to board`);
+  };
+
+
 
   useEffect(() => {
     if (!token || !activeBoardId) {
@@ -219,6 +244,15 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         </div>
         
         <div className="flex items-center gap-3">
+            <button
+                onClick={() => setIsInviteOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0 1 1 0 002 0z" />
+                </svg>
+                Invite
+            </button>
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-semibold text-sm border border-slate-300 dark:border-slate-600">
                 {user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
@@ -246,6 +280,11 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddTask={addTask}
+      />
+      <InviteUserModal
+        isOpen={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+        onInvite={handleInvite}
       />
       <EditTaskModal
         isOpen={isEditOpen}
