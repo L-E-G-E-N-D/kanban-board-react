@@ -4,6 +4,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
+  const [dueDate, setDueDate] = useState("");
 
   if (!isOpen) return null;
 
@@ -11,10 +12,12 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
     e.preventDefault();
     if (title.trim() === "") return;
     
-    onAddTask(title, description, priority);
+    // Pass dueDate or null/string
+    onAddTask(title, description, priority, dueDate);
     setTitle("");
     setDescription("");
     setPriority("medium");
+    setDueDate("");
     onClose();
   };
 
@@ -22,6 +25,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
     setTitle("");
     setDescription("");
     setPriority("medium");
+    setDueDate("");
     onClose();
   };
 
@@ -113,6 +117,22 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="dueDate"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Due Date
+            </label>
+            <input
+              id="dueDate"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-800 dark:text-white"
+            />
           </div>
 
           <div className="flex gap-3 justify-end">

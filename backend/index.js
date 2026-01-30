@@ -146,7 +146,7 @@ app.get("/tasks", auth, async (req, res) => {
 
 
 app.post("/tasks", auth, async (req, res) => {
-  const { title, description, status, priority, boardId } = req.body;
+  const { title, description, status, priority, dueDate, boardId } = req.body;
 
   if (!title) {
     return res.status(400).json({ message: "Title is required" });
@@ -170,6 +170,7 @@ app.post("/tasks", auth, async (req, res) => {
     description: description || "",
     status: status || "todo",
     priority: priority || "medium",
+    dueDate: dueDate || null,
     boardId,
     userId: req.userId
   });
@@ -179,7 +180,7 @@ app.post("/tasks", auth, async (req, res) => {
 
 
 app.patch("/tasks/:id", auth, async (req, res) => {
-  const { status, title, description, priority } = req.body;
+  const { status, title, description, priority, dueDate } = req.body;
 
   if (title !== undefined && title.trim() === "") {
     return res.status(400).json({ message: "Title cannot be empty" });
@@ -203,6 +204,7 @@ app.patch("/tasks/:id", auth, async (req, res) => {
   if (title !== undefined) task.title = title;
   if (description !== undefined) task.description = description;
   if (priority !== undefined) task.priority = priority;
+  if (dueDate !== undefined) task.dueDate = dueDate;
 
   await task.save();
 

@@ -27,16 +27,26 @@ function Task({ task, index, onDelete, onEdit }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug">{task.title}</h3>
-                {task.priority && (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ml-2 uppercase tracking-wide
-                    ${task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    }
-                  `}>
-                    {task.priority}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {task.dueDate && (
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                    </span>
+                  )}
+                  {task.priority && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide
+                      ${task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                        task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                      }
+                    `}>
+                      {task.priority}
+                    </span>
+                  )}
+                </div>
               </div>
               {task.description && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">

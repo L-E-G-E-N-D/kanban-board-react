@@ -85,7 +85,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       });
   }, [token, activeBoardId]);
 
-  const addTask = useCallback((title, description = "") => {
+  const addTask = useCallback((title, description, priority, dueDate) => {
     if (title.trim() === "") return;
     if (!activeBoardId) return;
 
@@ -97,7 +97,14 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         ...authHeaders,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, description, boardId: activeBoardId, status: targetStatus }),
+      body: JSON.stringify({ 
+        title, 
+        description, 
+        boardId: activeBoardId, 
+        status: targetStatus,
+        priority: priority || "medium",
+        dueDate: dueDate || null
+      }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -293,8 +300,8 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           setIsEditOpen(false);
           setEditingTask(null);
         }}
-        onSave={(title, description) =>
-          updateTask(editingTask._id, { title, description })
+        onSave={(title, description, priority, dueDate) =>
+          updateTask(editingTask._id, { title, description, priority, dueDate })
         }
       />
 

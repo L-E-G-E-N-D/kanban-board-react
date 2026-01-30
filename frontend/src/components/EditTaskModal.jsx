@@ -4,12 +4,14 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
+  const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
     if (isOpen && task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
       setPriority(task.priority || "medium");
+      setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : "");
     }
   }, [isOpen, task]);
 
@@ -18,13 +20,14 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title.trim() === "") return;
-    onSave(title, description, priority);
+    onSave(title, description, priority, dueDate);
   };
 
   const handleClose = () => {
     setTitle(task?.title || "");
     setDescription(task?.description || "");
     setPriority(task?.priority || "medium");
+    setDueDate(task?.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : "");
     onClose();
   };
 
@@ -116,6 +119,22 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="edit-dueDate"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Due Date
+            </label>
+            <input
+              id="edit-dueDate"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-800 dark:text-white"
+            />
           </div>
 
           <div className="flex gap-3 justify-end">
