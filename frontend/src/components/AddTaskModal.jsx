@@ -3,6 +3,7 @@ import { useState } from "react";
 function AddTaskModal({ isOpen, onClose, onAddTask }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("medium");
 
   if (!isOpen) return null;
 
@@ -10,15 +11,17 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
     e.preventDefault();
     if (title.trim() === "") return;
     
-    onAddTask(title, description);
+    onAddTask(title, description, priority);
     setTitle("");
     setDescription("");
+    setPriority("medium");
     onClose();
   };
 
   const handleClose = () => {
     setTitle("");
     setDescription("");
+    setPriority("medium");
     onClose();
   };
 
@@ -91,6 +94,25 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
               className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 resize-none dark:bg-gray-800 dark:text-white"
               autoComplete="off"
             />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="priority"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Priority
+            </label>
+            <select
+              id="priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
 
           <div className="flex gap-3 justify-end">

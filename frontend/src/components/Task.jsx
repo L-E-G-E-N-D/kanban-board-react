@@ -25,7 +25,19 @@ function Task({ task, index, onDelete, onEdit }) {
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug">{task.title}</h3>
+              <div className="flex items-start justify-between">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug">{task.title}</h3>
+                {task.priority && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ml-2 uppercase tracking-wide
+                    ${task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    }
+                  `}>
+                    {task.priority}
+                  </span>
+                )}
+              </div>
               {task.description && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                   {task.description}

@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 function EditTaskModal({ isOpen, task, onClose, onSave }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("medium");
 
   useEffect(() => {
     if (isOpen && task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
+      setPriority(task.priority || "medium");
     }
   }, [isOpen, task]);
 
@@ -16,12 +18,13 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title.trim() === "") return;
-    onSave(title, description);
+    onSave(title, description, priority);
   };
 
   const handleClose = () => {
     setTitle(task?.title || "");
     setDescription(task?.description || "");
+    setPriority(task?.priority || "medium");
     onClose();
   };
 
@@ -94,6 +97,25 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
               className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 resize-none dark:bg-gray-800 dark:text-white"
               autoComplete="off"
             />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="edit-priority"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Priority
+            </label>
+            <select
+              id="edit-priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
 
           <div className="flex gap-3 justify-end">
