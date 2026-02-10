@@ -93,11 +93,104 @@ function App() {
     navigate("/login");
   }, [navigate]);
 
-  // ... (handleCreateBoard, etc. - no changes needed if they aren't passed as dependencies to effects in Board)
-  // Actually handleCreateBoard, Rename, Delete are passed to Sidebar, not Board. Sidebar might not have effects depending on them.
-  // But let's stick to the critical ones for Board first.
+  /* 
+   * RESTORING DELETED CODE
+   * The following functions were accidentally removed and are now being restored.
+   */
 
-  // ... skipping to addActivity ...
+  function handleCreateBoard(name) {
+    if (!token) return;
+
+    fetch(`${API_BASE_URL}/boards`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    })
+      .then((res) => {
+          if (res.status === 401) {
+              logout();
+              throw new Error("Unauthorized");
+          }
+          if (!res.ok) throw new Error("Failed to create board");
+          return res.json();
+      })
+      .then((newBoard) => {
+        setBoards((prev) => [...prev, newBoard]);
+        setActiveBoardId(newBoard._id);
+      })
+      .catch((err) => {
+          if (err.message !== "Unauthorized") console.error(err);
+      });
+  }
+  
+  function handleRenameBoard(boardId, newName) {
+    if (!token) return;
+
+    fetch(`${API_BASE_URL}/boards/${boardId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name: newName }),
+    })
+      .then((res) => {
+        if (res.status === 401) {
+            logout();
+            throw new Error("Unauthorized");
+        }
+        if (!res.ok) throw new Error("Failed to rename board");
+        return res.json();
+      })
+      .then((updatedBoard) => {
+        setBoards((prev) =>
+          prev.map((b) => (b._id === boardId ? updatedBoard : b))
+        );
+      })
+      .catch((err) => {
+          if (err.message !== "Unauthorized") console.error(err);
+      });
+  }
+
+  function handleDeleteBoard(boardId) {
+    if (!token) return;
+
+    if (!window.confirm("Are you sure you want to delete this board? All tasks in it will be lost.")) {
+      return;
+    }
+
+    fetch(`${API_BASE_URL}/boards/${boardId}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    .then((res) => {
+        if (res.status === 401) {
+            logout();
+            throw new Error("Unauthorized");
+        }
+        if (!res.ok) throw new Error("Failed to delete board");
+        return res.json();
+    })
+    .then(() => {
+        const newBoards = boards.filter(b => b._id !== boardId);
+        setBoards(newBoards);
+        if (activeBoardId === boardId) {
+            setActiveBoardId(newBoards.length > 0 ? newBoards[0]._id : null);
+        }
+    })
+    .catch((err) => {
+        if (err.message !== "Unauthorized") console.error(err);
+    });
+  }
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [activityLog, setActivityLog] = useState([]);
   
   const addActivity = useCallback((message) => {
     setActivityLog((prev) => [message, ...prev].slice(0, 5));
