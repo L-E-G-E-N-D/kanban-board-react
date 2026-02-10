@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { Draggable } from "@hello-pangea/dnd";
+import { formatRelativeTime } from "../utils/dateUtils";
 
 function Task({ task, index, onDelete, onEdit }) {
   const handleDelete = (e) => {
@@ -28,6 +29,11 @@ function Task({ task, index, onDelete, onEdit }) {
               <div className="flex items-start justify-between">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug">{task.title}</h3>
                 <div className="flex items-center gap-2">
+                  {task.createdAt && (
+                     <span className="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                        {formatRelativeTime(task.createdAt)}
+                     </span>
+                  )}
                   {task.dueDate && (
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

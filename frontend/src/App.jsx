@@ -228,6 +228,7 @@ function App() {
                     onFilterChange={setActiveFilter}
                     activityLog={activityLog}
                     addActivity={addActivity}
+                    onLogout={logout}
                     />
                 ) : (
                     <div className="flex h-full items-center justify-center">

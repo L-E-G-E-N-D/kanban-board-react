@@ -10,7 +10,7 @@ import ActivityMonitor from "../components/ActivityMonitor";
 import API_BASE_URL from "../api.js";
 
 
-function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity }) {
+function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +48,11 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           body: JSON.stringify({ email }),
       });
       
+      if (res.status === 401) {
+          onLogout();
+          return;
+      }
+
       const data = await res.json();
       
       if (!res.ok) {
@@ -66,21 +71,42 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     fetch(`${API_BASE_URL}/notifications`, {
       headers: authHeaders
     })
-    .then(res => res.json())
-    .then(data => setNotifications(data))
+    .then(async (res) => {
+        if (res.status === 401) {
+            onLogout();
+            return null; // Stop processing
+        }
+        if (!res.ok) throw new Error("Failed to fetch notifications");
+        return res.json();
+    })
+    .then(data => {
+        if (data && Array.isArray(data)) {
+            setNotifications(data);
+        } else {
+             // If data is null (from 401 handler) or not array, don't set invalid state
+             if (data) console.error("Invalid notifications format:", data);
+        }
+    })
     .catch(err => console.error("Failed to fetch notifications", err));
-  }, [token, authHeaders]);
+  }, [token, authHeaders, onLogout]);
 
   const markAsRead = async (id) => {
     try {
-      await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+      const res = await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
         method: 'PATCH',
         headers: authHeaders
       });
+
+      if (res.status === 401) {
+          onLogout();
+          return;
+      }
       
-      setNotifications(prev => prev.map(n => 
-        n._id === id ? { ...n, isRead: true } : n
-      ));
+      if (res.ok) {
+        setNotifications(prev => prev.map(n => 
+            n._id === id ? { ...n, isRead: true } : n
+        ));
+      }
     } catch (err) {
       console.error("Failed to mark notification as read", err);
     }
@@ -99,6 +125,10 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       headers: authHeaders,
     })
       .then((res) => {
+        if (res.status === 401) {
+            onLogout();
+            throw new Error("Unauthorized");
+        }
         if (!res.ok) {
           throw new Error("Failed to fetch tasks");
         }
@@ -109,10 +139,12 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        if (err.message !== "Unauthorized") {
+            setError(err.message);
+        }
         setLoading(false);
       });
-  }, [token, activeBoardId]);
+  }, [token, activeBoardId, onLogout]);
 
   const addTask = useCallback((title, description, priority, dueDate) => {
     if (title.trim() === "") return;
@@ -136,6 +168,10 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       }),
     })
       .then((res) => {
+        if (res.status === 401) {
+            onLogout();
+            throw new Error("Unauthorized");
+        }
         if (!res.ok) {
           throw new Error("Failed to add task");
         }
@@ -147,9 +183,9 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         addActivity(`Task "${createdTask.title}" created in ${statusLabel}`);
       })
       .catch((err) => {
-        setError(err.message);
+        if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders, activeBoardId]);
+  }, [authHeaders, activeBoardId, onLogout, targetStatus]);
 
   const syncTaskStatus = useCallback(
     (id, newStatus, previousTasks) => {
@@ -164,18 +200,22 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         body: JSON.stringify({ status: newStatus }),
       })
         .then((res) => {
+          if (res.status === 401) {
+               onLogout();
+               throw new Error("Unauthorized");
+          }
           if (!res.ok) {
             throw new Error("Failed to update task");
           }
         })
         .catch((err) => {
-          setError(err.message);
+          if (err.message !== "Unauthorized") setError(err.message);
           if (previousTasks) {
             setTasks(previousTasks);
           }
         });
     },
-    [authHeaders]
+    [authHeaders, onLogout]
   );
 
   const deleteTask = useCallback((id) => {
@@ -186,6 +226,10 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       headers: authHeaders,
     })
       .then((res) => {
+        if (res.status === 401) {
+            onLogout();
+            throw new Error("Unauthorized");
+        }
         if (!res.ok) {
           throw new Error("Failed to delete task");
         }
@@ -196,9 +240,9 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         }
       })
       .catch((err) => {
-        setError(err.message);
+        if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders]);
+  }, [authHeaders, tasks, onLogout]);
 
   const openEdit = useCallback((task) => {
     setEditingTask(task);
@@ -217,6 +261,10 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       body: JSON.stringify(updatedFields),
     })
       .then((res) => {
+        if (res.status === 401) {
+            onLogout();
+            throw new Error("Unauthorized");
+        }
         if (!res.ok) {
           throw new Error("Failed to update task");
         }
@@ -228,9 +276,9 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         setEditingTask(null);
       })
       .catch((err) => {
-        setError(err.message);
+        if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders]);
+  }, [authHeaders, onLogout]);
 
   function onDragEnd(result) {
     const { destination, source, draggableId } = result;
