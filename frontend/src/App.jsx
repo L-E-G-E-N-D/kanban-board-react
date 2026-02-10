@@ -52,17 +52,28 @@ function App() {
     fetch(`${API_BASE_URL}/boards`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401) {
+            logout();
+            throw new Error("Unauthorized");
+        }
+        return res.json();
+      })
       .then((data) => {
-        setBoards(data);
-        if (data.length > 0 && !activeBoardId) {
-            setActiveBoardId(data[0]._id);
-        } else if (data.length > 0 && activeBoardId && !data.find(b => b._id === activeBoardId)) {
-            // fallback if stored board id is invalid/deleted
-            setActiveBoardId(data[0]._id);
+        if (Array.isArray(data)) {
+            setBoards(data);
+            if (data.length > 0 && !activeBoardId) {
+                setActiveBoardId(data[0]._id);
+            } else if (data.length > 0 && activeBoardId && !data.find(b => b._id === activeBoardId)) {
+                setActiveBoardId(data[0]._id);
+            }
+        } else {
+            setBoards([]);
         }
       })
-      .catch((err) => console.error("Failed to fetch boards", err));
+      .catch((err) => {
+        if (err.message !== "Unauthorized") console.error("Failed to fetch boards", err);
+      });
   }, [token]);
 
   useEffect(() => {
@@ -94,6 +105,10 @@ function App() {
       body: JSON.stringify({ name }),
     })
       .then((res) => {
+          if (res.status === 401) {
+              logout();
+              throw new Error("Unauthorized");
+          }
           if (!res.ok) throw new Error("Failed to create board");
           return res.json();
       })
@@ -101,7 +116,9 @@ function App() {
         setBoards((prev) => [...prev, newBoard]);
         setActiveBoardId(newBoard._id);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+          if (err.message !== "Unauthorized") console.error(err);
+      });
   }
   
   function handleRenameBoard(boardId, newName) {
@@ -116,6 +133,10 @@ function App() {
       body: JSON.stringify({ name: newName }),
     })
       .then((res) => {
+        if (res.status === 401) {
+            logout();
+            throw new Error("Unauthorized");
+        }
         if (!res.ok) throw new Error("Failed to rename board");
         return res.json();
       })
@@ -124,7 +145,9 @@ function App() {
           prev.map((b) => (b._id === boardId ? updatedBoard : b))
         );
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+          if (err.message !== "Unauthorized") console.error(err);
+      });
   }
 
   function handleDeleteBoard(boardId) {
@@ -141,6 +164,10 @@ function App() {
         },
     })
     .then((res) => {
+        if (res.status === 401) {
+            logout();
+            throw new Error("Unauthorized");
+        }
         if (!res.ok) throw new Error("Failed to delete board");
         return res.json();
     })
@@ -151,7 +178,9 @@ function App() {
             setActiveBoardId(newBoards.length > 0 ? newBoards[0]._id : null);
         }
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+        if (err.message !== "Unauthorized") console.error(err);
+    });
   }
 
   const [searchQuery, setSearchQuery] = useState("");
