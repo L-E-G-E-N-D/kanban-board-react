@@ -2,13 +2,25 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 app.use(cors());
 app.use(express.json());
+
+app.set('io', io);
 const Task = require('./models/Task');
 
 const bcrypt = require("bcryptjs");
@@ -184,6 +196,8 @@ app.post("/tasks", auth, async (req, res) => {
     userId: req.userId
   });
 
+  io.to(boardId).emit('task-created', newTask);
+
   res.json(newTask);
 });
 
@@ -217,6 +231,8 @@ app.patch("/tasks/:id", auth, async (req, res) => {
 
   await task.save();
 
+  io.to(task.boardId.toString()).emit('task-updated', task);
+
   res.json(task);
 });
 
@@ -237,7 +253,11 @@ app.delete("/tasks/:id", auth, async (req, res) => {
     return res.status(403).json({ message: "Not authorized" });
   }
 
+  const boardId = task.boardId;
   await Task.deleteOne({ _id: req.params.id });
+  
+  io.to(boardId.toString()).emit('task-deleted', req.params.id);
+
   res.json({ message: "Task deleted successfully" });
 });
 
@@ -342,7 +362,16 @@ app.post("/auth/login", async (req, res) => {
   });
 });
 
+io.on('connection', (socket) => {
+  socket.on('join-board', (boardId) => {
+    socket.join(boardId);
+  });
 
-app.listen(PORT, () => {
+  socket.on('leave-board', (boardId) => {
+    socket.leave(boardId);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
