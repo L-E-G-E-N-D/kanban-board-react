@@ -296,6 +296,7 @@ function App() {
                     activeFilter={activeFilter}
                     onFilterChange={setActiveFilter}
                     activityLog={activityLog}
+                    setActivityLog={setActivityLog}
                     addActivity={addActivity}
                     onLogout={logout}
                     />

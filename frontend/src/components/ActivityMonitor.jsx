@@ -8,10 +8,21 @@ function ActivityMonitor({ activities }) {
       {activities.length === 0 ? (
         <p className="text-xs text-slate-500 dark:text-slate-400 italic">No recent activity</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {activities.map((activity, index) => (
-            <li key={index} className="text-xs text-slate-600 dark:text-slate-300 border-l-2 border-slate-500 pl-2">
-              {activity}
+            <li key={activity._id || index} className="text-[11px] text-slate-600 dark:text-slate-300 border-l-2 border-indigo-500 pl-3 leading-relaxed">
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {activity.userId?.name || "Someone"}
+              </span>{" "}
+              {activity.action}
+              {activity.details && (
+                <span className="text-slate-500 italic block mt-0.5 ml-1">
+                  "{activity.details}"
+                </span>
+              )}
+              <span className="text-[10px] text-slate-400 block mt-1">
+                {new Date(activity.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
             </li>
           ))}
         </ul>

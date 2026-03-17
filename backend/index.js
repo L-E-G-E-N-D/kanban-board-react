@@ -28,12 +28,23 @@ const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Board = require("./models/Board");
 const Notification = require("./models/Notification");
+const Activity = require("./models/Activity");
 const auth = require("./middleware/auth");
 
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
+
+async function logActivity(boardId, userId, action, details) {
+  try {
+    const activity = await Activity.create({ boardId, userId, action, details });
+    const populated = await activity.populate('userId', 'name email');
+    io.to(boardId.toString()).emit('new-activity', populated);
+  } catch (err) {
+    console.error("Activity logging failed", err);
+  }
+}
 
 app.get('/health', (req, res) => {
   res.send("Backend running");
@@ -145,6 +156,14 @@ app.delete("/boards/:id", auth, async (req, res) => {
   res.json({ message: "Board deleted successfully" });
 });
 
+app.get("/boards/:id/activity", auth, async (req, res) => {
+  const activities = await Activity.find({ boardId: req.params.id })
+    .populate("userId", "name email")
+    .sort({ createdAt: -1 })
+    .limit(50);
+  res.json(activities);
+});
+
 app.get("/tasks", auth, async (req, res) => {
   const { boardId } = req.query;
   if (!boardId) {
@@ -197,6 +216,7 @@ app.post("/tasks", auth, async (req, res) => {
   });
 
   io.to(boardId).emit('task-created', newTask);
+  logActivity(boardId, req.userId, "created a task", newTask.title);
 
   res.json(newTask);
 });
@@ -232,6 +252,7 @@ app.patch("/tasks/:id", auth, async (req, res) => {
   await task.save();
 
   io.to(task.boardId.toString()).emit('task-updated', task);
+  logActivity(task.boardId, req.userId, "updated task", task.title);
 
   res.json(task);
 });
@@ -257,6 +278,7 @@ app.delete("/tasks/:id", auth, async (req, res) => {
   await Task.deleteOne({ _id: req.params.id });
   
   io.to(boardId.toString()).emit('task-deleted', req.params.id);
+  logActivity(boardId, req.userId, "deleted a task", "ID: " + req.params.id);
 
   res.json({ message: "Task deleted successfully" });
 });

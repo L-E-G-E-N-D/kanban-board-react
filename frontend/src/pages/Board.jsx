@@ -11,7 +11,7 @@ import API_BASE_URL from "../api.js";
 import { io } from "socket.io-client";
 
 
-function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity, onLogout }) {
+function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, setActivityLog, addActivity, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -145,21 +145,27 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       setTasks((prev) => prev.filter((t) => t._id !== deletedId));
     });
 
+    socket.on("new-activity", (activity) => {
+      setActivityLog((prev) => [activity, ...prev].slice(0, 10));
+    });
+
     return () => {
       socket.emit("leave-board", activeBoardId);
       socket.disconnect();
     };
-  }, [activeBoardId, setTasks, addActivity, user]);
+  }, [activeBoardId, setTasks, addActivity, user, setActivityLog]);
 
   useEffect(() => {
     if (!token || !activeBoardId) {
       setTasks([]);
+      setActivityLog([]);
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
 
+    // Fetch tasks
     fetch(`${API_BASE_URL}/tasks?boardId=${activeBoardId}`, {
       headers: authHeaders,
     })
@@ -168,22 +174,24 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
             onLogout();
             throw new Error("Unauthorized");
         }
-        if (!res.ok) {
-          throw new Error("Failed to fetch tasks");
-        }
         return res.json();
       })
       .then((data) => {
         setTasks(data);
-        setLoading(false);
       })
       .catch((err) => {
-        if (err.message !== "Unauthorized") {
-            setError(err.message);
-        }
-        setLoading(false);
-      });
-  }, [token, activeBoardId, onLogout]);
+        if (err.message !== "Unauthorized") setError(err.message);
+      })
+      .finally(() => setLoading(false));
+
+    // Fetch activities
+    fetch(`${API_BASE_URL}/boards/${activeBoardId}/activity`, {
+        headers: authHeaders,
+    })
+    .then(res => res.json())
+    .then(data => setActivityLog(data || []))
+    .catch(err => console.error("Failed to fetch activity", err));
+  }, [token, activeBoardId, onLogout, authHeaders, setTasks, setActivityLog]);
 
   const addTask = useCallback((title, description, priority, dueDate) => {
     if (title.trim() === "") return;
