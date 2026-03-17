@@ -8,6 +8,7 @@ import StatsPanel from "../components/StatsPanel";
 import SearchBar from "../components/SearchBar";
 import ActivityMonitor from "../components/ActivityMonitor";
 import API_BASE_URL from "../api.js";
+import { io } from "socket.io-client";
 
 
 function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, addActivity, onLogout }) {
@@ -111,6 +112,39 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       console.error("Failed to mark notification as read", err);
     }
   };
+
+  useEffect(() => {
+    if (!activeBoardId) return;
+
+    const socket = io(API_BASE_URL);
+
+    socket.on("connect", () => {
+      socket.emit("join-board", activeBoardId);
+    });
+
+    socket.on("task-created", (newTask) => {
+      setTasks((prev) => {
+        if (prev.find(t => t._id === newTask._id)) return prev;
+        return [...prev, newTask];
+      });
+      addActivity(`Task "${newTask.title}" was added by someone`);
+    });
+
+    socket.on("task-updated", (updatedTask) => {
+      setTasks((prev) => 
+        prev.map((t) => (t._id === updatedTask._id ? updatedTask : t))
+      );
+    });
+
+    socket.on("task-deleted", (deletedId) => {
+      setTasks((prev) => prev.filter((t) => t._id !== deletedId));
+    });
+
+    return () => {
+      socket.emit("leave-board", activeBoardId);
+      socket.disconnect();
+    };
+  }, [activeBoardId, setTasks, addActivity]);
 
   useEffect(() => {
     if (!token || !activeBoardId) {
