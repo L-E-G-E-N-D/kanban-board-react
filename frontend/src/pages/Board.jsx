@@ -21,6 +21,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   const [targetStatus, setTargetStatus] = useState("todo");
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [activeUsers, setActiveUsers] = useState([]);
 
   const openAddTask = useCallback((status) => {
     setTargetStatus(status);
@@ -119,7 +120,11 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     const socket = io(API_BASE_URL);
 
     socket.on("connect", () => {
-      socket.emit("join-board", activeBoardId);
+      socket.emit("join-board", { boardId: activeBoardId, user });
+    });
+
+    socket.on("presence-update", (users) => {
+      setActiveUsers(users);
     });
 
     socket.on("task-created", (newTask) => {
@@ -144,7 +149,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       socket.emit("leave-board", activeBoardId);
       socket.disconnect();
     };
-  }, [activeBoardId, setTasks, addActivity]);
+  }, [activeBoardId, setTasks, addActivity, user]);
 
   useEffect(() => {
     if (!token || !activeBoardId) {
@@ -425,6 +430,23 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
             <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">
                 {user?.name || user?.email || "User"}
             </span>
+          </div>
+          
+          <div className="flex -space-x-2 overflow-hidden items-center ml-2 border-l border-slate-200 dark:border-slate-700 pl-4">
+              {activeUsers.slice(0, 5).map((u, i) => (
+                  <div 
+                    key={i} 
+                    className="inline-block h-7 w-7 rounded-full ring-2 ring-white dark:ring-gray-900 bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-[10px] font-bold text-blue-700 dark:text-blue-300"
+                    title={u.name || u.email}
+                  >
+                      {(u.name || u.email || 'A').charAt(0).toUpperCase()}
+                  </div>
+              ))}
+              {activeUsers.length > 5 && (
+                  <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">
+                      +{activeUsers.length - 5} more
+                  </span>
+              )}
           </div>
         </div>
       </div>

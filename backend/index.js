@@ -362,13 +362,46 @@ app.post("/auth/login", async (req, res) => {
   });
 });
 
+const activeUsers = new Map();
+
 io.on('connection', (socket) => {
-  socket.on('join-board', (boardId) => {
+  socket.on('join-board', ({ boardId, user }) => {
     socket.join(boardId);
+    
+    if (user) {
+      activeUsers.set(socket.id, { boardId, user });
+      
+      const boardUsers = Array.from(activeUsers.values())
+        .filter(u => u.boardId === boardId)
+        .map(u => u.user);
+        
+      io.to(boardId).emit('presence-update', boardUsers);
+    }
   });
 
   socket.on('leave-board', (boardId) => {
     socket.leave(boardId);
+    activeUsers.delete(socket.id);
+    
+    const boardUsers = Array.from(activeUsers.values())
+      .filter(u => u.boardId === boardId)
+      .map(u => u.user);
+      
+    io.to(boardId).emit('presence-update', boardUsers);
+  });
+
+  socket.on('disconnect', () => {
+    const userData = activeUsers.get(socket.id);
+    if (userData) {
+      const { boardId } = userData;
+      activeUsers.delete(socket.id);
+      
+      const boardUsers = Array.from(activeUsers.values())
+        .filter(u => u.boardId === boardId)
+        .map(u => u.user);
+        
+      io.to(boardId).emit('presence-update', boardUsers);
+    }
   });
 });
 
