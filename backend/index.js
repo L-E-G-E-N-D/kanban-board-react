@@ -164,6 +164,23 @@ app.get("/boards/:id/activity", auth, async (req, res) => {
   res.json(activities);
 });
 
+app.get("/boards/:id/analytics", auth, async (req, res) => {
+  const tasks = await Task.find({ boardId: req.params.id });
+  
+  const stats = {
+    total: tasks.length,
+    completed: tasks.filter(t => t.status === 'done').length,
+    pending: tasks.filter(t => t.status !== 'done').length,
+    byStatus: [
+      { name: 'To Do', value: tasks.filter(t => t.status === 'todo').length },
+      { name: 'Doing', value: tasks.filter(t => t.status === 'doing').length },
+      { name: 'Done', value: tasks.filter(t => t.status === 'done').length },
+    ]
+  };
+  
+  res.json(stats);
+});
+
 app.get("/tasks", auth, async (req, res) => {
   const { boardId } = req.query;
   if (!boardId) {
