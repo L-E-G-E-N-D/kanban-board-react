@@ -279,8 +279,38 @@ app.post("/auth/signup", async (req, res) => {
     password: hashedPassword
   });
 
-  res.status(201).json({ message: "User created successfully" });
-})
+  const token = jwt.sign(
+    { userId: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  res.status(201).json({
+    message: "User created successfully",
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email
+    }
+  });
+});
+
+app.get("/auth/me", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 app.post("/auth/login", async (req, res) => {

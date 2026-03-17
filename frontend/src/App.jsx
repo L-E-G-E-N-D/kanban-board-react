@@ -24,6 +24,40 @@ function App() {
   const [boardToRename, setBoardToRename] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(!!token);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("activeBoardId");
+    localStorage.removeItem("user");
+    setToken(null);
+    setUser(null);
+    setActiveBoardId(null);
+    setTasks([]);
+    navigate("/login");
+  }, [navigate, setToken, setUser, setActiveBoardId, setTasks]);
+
+  useEffect(() => {
+    if (token) {
+      fetch(`${API_BASE_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (res.ok) return res.json();
+          throw new Error("Invalid token");
+        })
+        .then((userData) => {
+          setUser(userData);
+          setIsVerifying(false);
+        })
+        .catch(() => {
+          logout();
+          setIsVerifying(false);
+        });
+    } else {
+      setIsVerifying(false);
+    }
+  }, [token, logout]);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -82,16 +116,6 @@ function App() {
     }
   }, [activeBoardId]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("activeBoardId");
-    localStorage.removeItem("user");
-    setToken(null);
-    setUser(null);
-    setActiveBoardId(null);
-    setTasks([]);
-    navigate("/login");
-  }, [navigate]);
 
   /* 
    * RESTORING DELETED CODE
@@ -210,6 +234,17 @@ function App() {
     return true;
   });
 
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">Verifying your session...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route
@@ -308,6 +343,8 @@ function App() {
         element={
           <Login
             onLogin={(tok, userData) => {
+              localStorage.setItem("token", tok);
+              localStorage.setItem("user", JSON.stringify(userData));
               setToken(tok);
               setUser(userData);
               navigate("/");
@@ -318,7 +355,18 @@ function App() {
       />
       <Route
         path="/signup"
-        element={<Signup onSwitch={() => navigate("/login")} />}
+        element={
+          <Signup 
+            onLogin={(tok, userData) => {
+              localStorage.setItem("token", tok);
+              localStorage.setItem("user", JSON.stringify(userData));
+              setToken(tok);
+              setUser(userData);
+              navigate("/");
+            }}
+            onSwitch={() => navigate("/login")} 
+          />
+        }
       />
       <Route
         path="*"
