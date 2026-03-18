@@ -23,6 +23,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   const [showNotifications, setShowNotifications] = useState(false);
   const [activeUsers, setActiveUsers] = useState([]);
   const [boardMembers, setBoardMembers] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
 
   const openAddTask = useCallback((status) => {
     setTargetStatus(status);
@@ -93,6 +94,24 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   useEffect(() => {
     fetchBoardMembers();
   }, [fetchBoardMembers]);
+
+  const fetchAnalytics = useCallback(async () => {
+    if (!activeBoardId || !token) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/boards/${activeBoardId}/analytics`, {
+        headers: authHeaders,
+      });
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
+      if (!res.ok) return;
+      const data = await res.json();
+      setAnalytics(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [activeBoardId, token, authHeaders, onLogout]);
 
 
 
@@ -168,12 +187,14 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         if (prev.find((t) => t._id === newTask._id)) return prev;
         return [...prev, newTask];
       });
+      fetchAnalytics();
     };
 
     const onTaskUpdated = (updatedTask) => {
       setTasks((prev) =>
         prev.map((t) => (t._id === updatedTask._id ? updatedTask : t))
       );
+      fetchAnalytics();
     };
 
     const onTaskMoved = ({ task }) => {
@@ -181,15 +202,18 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       setTasks((prev) =>
         prev.map((t) => (t._id === task._id ? task : t))
       );
+      fetchAnalytics();
     };
 
     const onTaskDeleted = (deletedId) => {
       setTasks((prev) => prev.filter((t) => t._id !== deletedId));
+      fetchAnalytics();
     };
 
     const onBoardSnapshot = (snapshot) => {
       if (!Array.isArray(snapshot)) return;
       setTasks(snapshot);
+      fetchAnalytics();
     };
 
     const onNewActivity = (activity) => {
@@ -226,7 +250,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       socket.off("new-activity", onNewActivity);
       socket.off("socket-error", onSocketError);
     };
-  }, [activeBoardId, token, user, setTasks, setActivityLog]);
+  }, [activeBoardId, token, user, setTasks, setActivityLog, fetchAnalytics]);
 
   useEffect(() => {
     if (!token || !activeBoardId) {
@@ -264,7 +288,9 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     .then(res => res.json())
     .then(data => setActivityLog(data || []))
     .catch(err => console.error("Failed to fetch activity", err));
-  }, [token, activeBoardId, onLogout, authHeaders, setTasks, setActivityLog]);
+
+    fetchAnalytics();
+  }, [token, activeBoardId, onLogout, authHeaders, setTasks, setActivityLog, fetchAnalytics]);
 
   const addTask = useCallback((title, description, priority, dueDate) => {
     if (title.trim() === "") return;
@@ -298,12 +324,16 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         return res.json();
       })
       .then((createdTask) => {
-        setTasks((prev) => [...prev, createdTask]);
+        setTasks((prev) => {
+          if (prev.some((task) => task._id === createdTask._id)) return prev;
+          return [...prev, createdTask];
+        });
+        fetchAnalytics();
       })
       .catch((err) => {
         if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders, activeBoardId, onLogout, targetStatus]);
+  }, [authHeaders, activeBoardId, onLogout, targetStatus, fetchAnalytics]);
 
   const syncTaskStatus = useCallback(
     (id, newStatus, previousTasks) => {
@@ -326,14 +356,17 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
             throw new Error("Failed to update task");
           }
         })
-        .catch((err) => {
+      .catch((err) => {
           if (err.message !== "Unauthorized") setError(err.message);
           if (previousTasks) {
             setTasks(previousTasks);
           }
+        })
+        .finally(() => {
+          fetchAnalytics();
         });
     },
-    [authHeaders, onLogout]
+    [authHeaders, onLogout, fetchAnalytics]
   );
 
   const deleteTask = useCallback((id) => {
@@ -352,11 +385,12 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           throw new Error("Failed to delete task");
         }
         setTasks((prev) => prev.filter((task) => task._id !== id));
+        fetchAnalytics();
       })
       .catch((err) => {
         if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders, onLogout]);
+  }, [authHeaders, onLogout, fetchAnalytics]);
 
   const openEdit = useCallback((task) => {
     setEditingTask(task);
@@ -388,11 +422,12 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         setTasks((prev) => prev.map((t) => (t._id === id ? updatedTask : t)));
         setIsEditOpen(false);
         setEditingTask(null);
+        fetchAnalytics();
       })
       .catch((err) => {
         if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders, onLogout]);
+  }, [authHeaders, onLogout, fetchAnalytics]);
 
   function onDragEnd(result) {
     const { destination, source, draggableId } = result;
@@ -597,7 +632,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         <div className="w-64 shrink-0 space-y-6">
           <div>
             <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Board Stats</h3>
-            <StatsPanel tasks={tasks} />
+            <StatsPanel tasks={tasks} analytics={analytics} />
           </div>
           <ActivityMonitor activities={activityLog} />
         </div>
