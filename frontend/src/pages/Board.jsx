@@ -8,7 +8,7 @@ import StatsPanel from "../components/StatsPanel";
 import SearchBar from "../components/SearchBar";
 import ActivityMonitor from "../components/ActivityMonitor";
 import API_BASE_URL from "../api.js";
-import { io } from "socket.io-client";
+import { connectSocket } from "../socket";
 
 
 function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, setActivityLog, addActivity, onLogout }) {
@@ -115,45 +115,65 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   };
 
   useEffect(() => {
-    if (!activeBoardId) return;
+    if (!activeBoardId || !token) return;
 
-    const socket = io(API_BASE_URL);
+    const socket = connectSocket(token);
 
-    socket.on("connect", () => {
-      socket.emit("join-board", { boardId: activeBoardId, user });
-    });
+    const onConnect = () => {
+      socket.emit("join-board", {
+        boardId: activeBoardId,
+        user: user
+          ? { id: user.id, name: user.name, email: user.email }
+          : null,
+      });
+    };
 
-    socket.on("presence-update", (users) => {
+    const onPresenceUpdate = (users) => {
       setActiveUsers(users);
-    });
+    };
 
-    socket.on("task-created", (newTask) => {
+    const onTaskCreated = (newTask) => {
       setTasks((prev) => {
-        if (prev.find(t => t._id === newTask._id)) return prev;
+        if (prev.find((t) => t._id === newTask._id)) return prev;
         return [...prev, newTask];
       });
-      addActivity(`Task "${newTask.title}" was added by someone`);
-    });
+    };
 
-    socket.on("task-updated", (updatedTask) => {
-      setTasks((prev) => 
+    const onTaskUpdated = (updatedTask) => {
+      setTasks((prev) =>
         prev.map((t) => (t._id === updatedTask._id ? updatedTask : t))
       );
-    });
+    };
 
-    socket.on("task-deleted", (deletedId) => {
+    const onTaskDeleted = (deletedId) => {
       setTasks((prev) => prev.filter((t) => t._id !== deletedId));
-    });
+    };
 
-    socket.on("new-activity", (activity) => {
-      setActivityLog((prev) => [activity, ...prev].slice(0, 10));
-    });
+    const onNewActivity = (activity) => {
+      setActivityLog((prev) => [activity, ...prev].slice(0, 30));
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("presence-update", onPresenceUpdate);
+    socket.on("task-created", onTaskCreated);
+    socket.on("task-updated", onTaskUpdated);
+    socket.on("task-deleted", onTaskDeleted);
+    socket.on("new-activity", onNewActivity);
+
+    if (socket.connected) {
+      onConnect();
+    }
 
     return () => {
       socket.emit("leave-board", activeBoardId);
-      socket.disconnect();
+      socket.off("connect", onConnect);
+      socket.off("presence-update", onPresenceUpdate);
+      socket.off("task-created", onTaskCreated);
+      socket.off("task-updated", onTaskUpdated);
+      socket.off("task-deleted", onTaskDeleted);
+      socket.off("new-activity", onNewActivity);
     };
-  }, [activeBoardId, setTasks, addActivity, user, setActivityLog]);
+  }, [activeBoardId, token, user, setTasks, setActivityLog]);
 
   useEffect(() => {
     if (!token || !activeBoardId) {
