@@ -260,6 +260,8 @@ app.patch("/tasks/:id", auth, async (req, res) => {
     return res.status(403).json({ message: "Not authorized" });
   }
 
+  const oldStatus = task.status;
+
   if (status !== undefined) task.status = status;
   if (title !== undefined) task.title = title;
   if (description !== undefined) task.description = description;
@@ -269,6 +271,15 @@ app.patch("/tasks/:id", auth, async (req, res) => {
   await task.save();
 
   io.to(task.boardId.toString()).emit('task-updated', task);
+  if (status !== undefined && oldStatus !== status) {
+    io.to(task.boardId.toString()).emit('task-moved', {
+      taskId: task._id,
+      boardId: task.boardId,
+      from: oldStatus,
+      to: status,
+      task,
+    });
+  }
   logActivity(task.boardId, req.userId, "updated task", task.title);
 
   res.json(task);

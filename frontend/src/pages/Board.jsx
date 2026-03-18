@@ -145,6 +145,13 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       );
     };
 
+    const onTaskMoved = ({ task }) => {
+      if (!task?._id) return;
+      setTasks((prev) =>
+        prev.map((t) => (t._id === task._id ? task : t))
+      );
+    };
+
     const onTaskDeleted = (deletedId) => {
       setTasks((prev) => prev.filter((t) => t._id !== deletedId));
     };
@@ -157,6 +164,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     socket.on("presence-update", onPresenceUpdate);
     socket.on("task-created", onTaskCreated);
     socket.on("task-updated", onTaskUpdated);
+    socket.on("task-moved", onTaskMoved);
     socket.on("task-deleted", onTaskDeleted);
     socket.on("new-activity", onNewActivity);
 
@@ -170,6 +178,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       socket.off("presence-update", onPresenceUpdate);
       socket.off("task-created", onTaskCreated);
       socket.off("task-updated", onTaskUpdated);
+      socket.off("task-moved", onTaskMoved);
       socket.off("task-deleted", onTaskDeleted);
       socket.off("new-activity", onNewActivity);
     };
