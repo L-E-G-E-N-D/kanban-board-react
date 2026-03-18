@@ -126,6 +126,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           ? { id: user.id, name: user.name, email: user.email }
           : null,
       });
+      socket.emit("request-board-sync", activeBoardId);
     };
 
     const onPresenceUpdate = (users) => {
@@ -156,6 +157,11 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       setTasks((prev) => prev.filter((t) => t._id !== deletedId));
     };
 
+    const onBoardSnapshot = (snapshot) => {
+      if (!Array.isArray(snapshot)) return;
+      setTasks(snapshot);
+    };
+
     const onNewActivity = (activity) => {
       setActivityLog((prev) => [activity, ...prev].slice(0, 30));
     };
@@ -166,6 +172,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     socket.on("task-updated", onTaskUpdated);
     socket.on("task-moved", onTaskMoved);
     socket.on("task-deleted", onTaskDeleted);
+    socket.on("board-snapshot", onBoardSnapshot);
     socket.on("new-activity", onNewActivity);
 
     if (socket.connected) {
@@ -180,6 +187,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       socket.off("task-updated", onTaskUpdated);
       socket.off("task-moved", onTaskMoved);
       socket.off("task-deleted", onTaskDeleted);
+      socket.off("board-snapshot", onBoardSnapshot);
       socket.off("new-activity", onNewActivity);
     };
   }, [activeBoardId, token, user, setTasks, setActivityLog]);

@@ -415,6 +415,12 @@ app.post("/auth/login", async (req, res) => {
 const activeUsers = new Map();
 
 io.on('connection', (socket) => {
+  socket.on('request-board-sync', async (boardId) => {
+    if (!boardId) return;
+    const tasks = await Task.find({ boardId });
+    socket.emit('board-snapshot', tasks);
+  });
+
   socket.on('join-board', ({ boardId, user }) => {
     socket.join(boardId);
     
