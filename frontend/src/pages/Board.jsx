@@ -11,7 +11,7 @@ import API_BASE_URL from "../api.js";
 import { connectSocket } from "../socket";
 
 
-function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, setActivityLog, addActivity, onLogout }) {
+function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQuery, onSearchChange, activeFilter, onFilterChange, activityLog, setActivityLog, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,7 +62,6 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           throw new Error(data.message || "Failed to invite user");
       }
       
-      addActivity(`Invited ${email} to board`);
       fetchBoardMembers();
   };
 
@@ -300,8 +299,6 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       })
       .then((createdTask) => {
         setTasks((prev) => [...prev, createdTask]);
-        const statusLabel = targetStatus === 'todo' ? 'To Do' : targetStatus === 'doing' ? 'Doing' : 'Done';
-        addActivity(`Task "${createdTask.title}" created in ${statusLabel}`);
       })
       .catch((err) => {
         if (err.message !== "Unauthorized") setError(err.message);
@@ -354,16 +351,12 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         if (!res.ok) {
           throw new Error("Failed to delete task");
         }
-        const taskTitle = tasks.find((t) => t._id === id)?.title;
         setTasks((prev) => prev.filter((task) => task._id !== id));
-        if (taskTitle) {
-            addActivity(`Task "${taskTitle}" deleted`);
-        }
       })
       .catch((err) => {
         if (err.message !== "Unauthorized") setError(err.message);
       });
-  }, [authHeaders, tasks, onLogout]);
+  }, [authHeaders, onLogout]);
 
   const openEdit = useCallback((task) => {
     setEditingTask(task);
@@ -424,8 +417,6 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     // Sync in background
     syncTaskStatus(draggableId, newStatus, previousTasks);
     
-    const taskTitle = tasks.find(t => t._id === draggableId)?.title || "Task";
-    addActivity(`Task "${taskTitle}" moved to ${newStatus === 'todo' ? 'To Do' : newStatus === 'doing' ? 'Doing' : 'Done'}`);
   }
 
   const todoTasks = useMemo(

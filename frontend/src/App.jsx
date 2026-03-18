@@ -216,10 +216,6 @@ function App() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [activityLog, setActivityLog] = useState([]);
   
-  const addActivity = useCallback((message) => {
-    setActivityLog((prev) => [message, ...prev].slice(0, 5));
-  }, []);
-
   const activeBoard = boards.find(b => b._id === activeBoardId);
 
   const filteredTasks = tasks.filter((task) => {
@@ -297,7 +293,6 @@ function App() {
                     onFilterChange={setActiveFilter}
                     activityLog={activityLog}
                     setActivityLog={setActivityLog}
-                    addActivity={addActivity}
                     onLogout={logout}
                     />
                 ) : (
