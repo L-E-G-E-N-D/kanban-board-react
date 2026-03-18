@@ -146,6 +146,8 @@ app.post("/boards/:id/invite", auth, async (req, res) => {
     relatedId: board._id
   });
 
+  logActivity(board._id, req.userId, "invited a member", userToInvite.email);
+
   res.json(board);
 });
 
@@ -326,8 +328,10 @@ app.patch("/tasks/:id", auth, async (req, res) => {
       to: status,
       task,
     });
+    logActivity(task.boardId, req.userId, "moved task", `${task.title} (${oldStatus} -> ${status})`);
+  } else {
+    logActivity(task.boardId, req.userId, "updated task", task.title);
   }
-  logActivity(task.boardId, req.userId, "updated task", task.title);
 
   res.json(task);
 });
@@ -353,7 +357,7 @@ app.delete("/tasks/:id", auth, async (req, res) => {
   await Task.deleteOne({ _id: req.params.id });
   
   io.to(boardId.toString()).emit('task-deleted', req.params.id);
-  logActivity(boardId, req.userId, "deleted a task", "ID: " + req.params.id);
+  logActivity(boardId, req.userId, "deleted task", task.title);
 
   res.json({ message: "Task deleted successfully" });
 });
