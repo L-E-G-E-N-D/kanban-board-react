@@ -468,8 +468,8 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+    <div className="max-w-[1280px] mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3 group">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
         </div>
@@ -563,7 +563,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-7">
         <SearchBar 
             searchQuery={searchQuery}
             onSearchChange={onSearchChange}
@@ -597,8 +597,8 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         }
       />
 
-      <div className="flex gap-6 items-start">
-        <div className="flex-1 overflow-x-auto pb-4">
+      <div className="flex gap-7 items-start">
+        <div className="flex-1 overflow-x-auto pb-6">
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex gap-4 sm:gap-6">
               <Column
@@ -629,7 +629,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           </DragDropContext>
         </div>
 
-        <div className="w-64 shrink-0 space-y-6">
+        <div className="w-72 shrink-0 space-y-6 sticky top-6">
           <div>
             <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Board Stats</h3>
             <StatsPanel tasks={tasks} analytics={analytics} />
