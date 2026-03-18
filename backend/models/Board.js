@@ -11,14 +11,20 @@ const boardSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
-        members: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
+        members: {
+            type: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                },
+            ],
+            default: [],
+        },
     },
     { timestamps: true }
 );
+
+boardSchema.index({ ownerId: 1 });
+boardSchema.index({ members: 1 });
 
 module.exports = mongoose.model("Board", boardSchema);

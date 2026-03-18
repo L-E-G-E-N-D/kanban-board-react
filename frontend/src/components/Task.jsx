@@ -20,8 +20,8 @@ function Task({ task, index, onDelete, onEdit }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-sm cursor-grab transition-all
-            ${snapshot.isDragging ? "shadow-lg ring-2 ring-gray-400 dark:ring-gray-600 rotate-2" : "hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600"}
+          className={`group bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)] cursor-grab transition-all duration-200
+            ${snapshot.isDragging ? "shadow-2xl ring-2 ring-indigo-500/20 dark:ring-indigo-400/20 scale-105" : "hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"}
           `}
         >
           <div className="flex items-start justify-between gap-3">
@@ -43,10 +43,10 @@ function Task({ task, index, onDelete, onEdit }) {
                     </span>
                   )}
                   {task.priority && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide
-                      ${task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                        task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest
+                      ${task.priority === 'high' ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' :
+                        task.priority === 'medium' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400' :
+                        'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
                       }
                     `}>
                       {task.priority}

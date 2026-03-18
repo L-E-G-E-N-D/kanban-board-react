@@ -36,6 +36,16 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+function hasBoardAccess(board, userId) {
+  if (!board || !userId) return false;
+  if (board.ownerId?.toString() === userId.toString()) return true;
+  return (board.members || []).some((member) => {
+    if (!member) return false;
+    const maybeId = member._id || member.userId || member;
+    return maybeId.toString() === userId.toString();
+  });
+}
+
 async function logActivity(boardId, userId, action, details) {
   try {
     const activity = await Activity.create({ boardId, userId, action, details });
@@ -83,7 +93,7 @@ app.patch("/boards/:id", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -104,9 +114,7 @@ app.post("/boards/:id/invite", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  // Allow owner or existing invitees to invite others?
-  // Prompt says "Allow access if req.userId === board.ownerId OR board.members.includes(req.userId)"
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -115,7 +123,11 @@ app.post("/boards/:id/invite", auth, async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
-  if (board.members.includes(userToInvite._id)) {
+  const alreadyMember = board.members.some(
+    (memberId) => memberId.toString() === userToInvite._id.toString()
+  );
+
+  if (alreadyMember) {
     return res.status(400).json({ message: "User is already a member" });
   }
 
@@ -137,6 +149,25 @@ app.post("/boards/:id/invite", auth, async (req, res) => {
   res.json(board);
 });
 
+app.get("/boards/:id/members", auth, async (req, res) => {
+  const board = await Board.findById(req.params.id)
+    .populate("ownerId", "name email")
+    .populate("members", "name email");
+
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+
+  if (!hasBoardAccess(board, req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
+  res.json({
+    owner: board.ownerId,
+    members: board.members,
+  });
+});
+
 app.delete("/boards/:id", auth, async (req, res) => {
   const board = await Board.findOne({ _id: req.params.id });
 
@@ -144,7 +175,7 @@ app.delete("/boards/:id", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -157,6 +188,14 @@ app.delete("/boards/:id", auth, async (req, res) => {
 });
 
 app.get("/boards/:id/activity", auth, async (req, res) => {
+  const board = await Board.findById(req.params.id);
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+  if (!hasBoardAccess(board, req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
   const activities = await Activity.find({ boardId: req.params.id })
     .populate("userId", "name email")
     .sort({ createdAt: -1 })
@@ -165,6 +204,14 @@ app.get("/boards/:id/activity", auth, async (req, res) => {
 });
 
 app.get("/boards/:id/analytics", auth, async (req, res) => {
+  const board = await Board.findById(req.params.id);
+  if (!board) {
+    return res.status(404).json({ message: "Board not found" });
+  }
+  if (!hasBoardAccess(board, req.userId)) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+
   const tasks = await Task.find({ boardId: req.params.id });
   
   const stats = {
@@ -192,7 +239,7 @@ app.get("/tasks", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -218,7 +265,7 @@ app.post("/tasks", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -256,7 +303,7 @@ app.patch("/tasks/:id", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -298,7 +345,7 @@ app.delete("/tasks/:id", auth, async (req, res) => {
     return res.status(404).json({ message: "Board not found" });
   }
 
-  if (board.ownerId.toString() !== req.userId && !board.members.includes(req.userId)) {
+  if (!hasBoardAccess(board, req.userId)) {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -412,51 +459,71 @@ app.post("/auth/login", async (req, res) => {
   });
 });
 
+io.use((socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token;
+    if (!token) return next(new Error("Unauthorized"));
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = decoded.userId;
+    next();
+  } catch (err) {
+    next(new Error("Unauthorized"));
+  }
+});
+
 const activeUsers = new Map();
+
+function emitBoardPresence(boardId) {
+  const uniqueUsers = new Map();
+
+  Array.from(activeUsers.values())
+    .filter((entry) => entry.boardId === boardId)
+    .forEach((entry) => {
+      if (!uniqueUsers.has(entry.user.id)) {
+        uniqueUsers.set(entry.user.id, entry.user);
+      }
+    });
+
+  io.to(boardId).emit('presence-update', Array.from(uniqueUsers.values()));
+}
 
 io.on('connection', (socket) => {
   socket.on('request-board-sync', async (boardId) => {
     if (!boardId) return;
+    const board = await Board.findById(boardId);
+    if (!board || !hasBoardAccess(board, socket.userId)) return;
     const tasks = await Task.find({ boardId });
     socket.emit('board-snapshot', tasks);
   });
 
-  socket.on('join-board', ({ boardId, user }) => {
-    socket.join(boardId);
-    
-    if (user) {
-      activeUsers.set(socket.id, { boardId, user });
-      
-      const boardUsers = Array.from(activeUsers.values())
-        .filter(u => u.boardId === boardId)
-        .map(u => u.user);
-        
-      io.to(boardId).emit('presence-update', boardUsers);
+  socket.on('join-board', async ({ boardId, user }) => {
+    if (!boardId) return;
+    const board = await Board.findById(boardId);
+    if (!board || !hasBoardAccess(board, socket.userId)) {
+      socket.emit("socket-error", { message: "Not authorized for this board" });
+      return;
     }
+
+    socket.join(boardId);
+
+    const member = user || { id: socket.userId, name: "Member", email: "" };
+    activeUsers.set(socket.id, { boardId, user: member });
+    emitBoardPresence(boardId);
   });
 
   socket.on('leave-board', (boardId) => {
     socket.leave(boardId);
     activeUsers.delete(socket.id);
-    
-    const boardUsers = Array.from(activeUsers.values())
-      .filter(u => u.boardId === boardId)
-      .map(u => u.user);
-      
-    io.to(boardId).emit('presence-update', boardUsers);
+    if (boardId) {
+      emitBoardPresence(boardId);
+    }
   });
 
   socket.on('disconnect', () => {
-    const userData = activeUsers.get(socket.id);
-    if (userData) {
-      const { boardId } = userData;
-      activeUsers.delete(socket.id);
-      
-      const boardUsers = Array.from(activeUsers.values())
-        .filter(u => u.boardId === boardId)
-        .map(u => u.user);
-        
-      io.to(boardId).emit('presence-update', boardUsers);
+    const entry = activeUsers.get(socket.id);
+    activeUsers.delete(socket.id);
+    if (entry?.boardId) {
+      emitBoardPresence(entry.boardId);
     }
   });
 });
