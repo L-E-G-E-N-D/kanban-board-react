@@ -23,4 +23,7 @@ const activitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+activitySchema.index({ boardId: 1, createdAt: -1 });
+activitySchema.index({ userId: 1, createdAt: -1 });
+
 module.exports = mongoose.model("Activity", activitySchema);
