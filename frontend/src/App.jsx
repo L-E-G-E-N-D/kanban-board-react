@@ -215,7 +215,6 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [activityLog, setActivityLog] = useState([]);
-  
   const activeBoard = boards.find(b => b._id === activeBoardId);
 
   const filteredTasks = tasks.filter((task) => {
