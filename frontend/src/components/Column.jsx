@@ -6,7 +6,7 @@ import { Droppable } from "@hello-pangea/dnd";
 function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
     const status = title.toLowerCase().replace(" ", "");
     return (
-      <div className="bg-slate-100/50 dark:bg-slate-900/40 rounded-2xl p-4 w-80 sm:w-96 border border-slate-200/70 dark:border-slate-800/60 transition-all duration-200 flex flex-col h-full max-h-[85vh] shadow-sm hover:shadow-md">
+      <div className="bg-slate-100/50 dark:bg-slate-900/40 rounded-2xl p-4 w-[84vw] sm:w-80 lg:w-96 border border-slate-200/70 dark:border-slate-800/60 transition-all duration-200 flex flex-col h-full max-h-[85vh] shadow-sm hover:shadow-md">
         <div className="flex items-center justify-between mb-4 px-1 sticky top-0 bg-inherit z-10">
           <h2 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-widest uppercase">
             {title} <span className="ml-2 px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded-full text-[10px]">{tasks.length}</span>

@@ -7,6 +7,7 @@ import Board from "./pages/Board";
 import Sidebar from "./components/Sidebar";
 import CreateBoardModal from "./components/CreateBoardModal";
 import RenameBoardModal from "./components/RenameBoardModal";
+import DeleteBoardModal from "./components/DeleteBoardModal";
 import API_BASE_URL from "./api.js";
 
 function App() {
@@ -21,9 +22,14 @@ function App() {
   const [activeBoardId, setActiveBoardId] = useState(localStorage.getItem("activeBoardId"));
   const [isCreateBoardOpen, setIsCreateBoardOpen] = useState(false);
   const [isRenameBoardOpen, setIsRenameBoardOpen] = useState(false);
+  const [isDeleteBoardOpen, setIsDeleteBoardOpen] = useState(false);
   const [boardToRename, setBoardToRename] = useState(null);
+  const [boardToDelete, setBoardToDelete] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.innerWidth >= 768;
+  });
   const [isVerifying, setIsVerifying] = useState(!!token);
 
   const logout = useCallback(() => {
@@ -116,6 +122,16 @@ function App() {
     }
   }, [activeBoardId]);
 
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(true);
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
 
   /* 
    * RESTORING DELETED CODE
@@ -180,13 +196,16 @@ function App() {
   }
 
   function handleDeleteBoard(boardId) {
+    const board = boards.find((b) => b._id === boardId);
+    setBoardToDelete(board || null);
+    setIsDeleteBoardOpen(true);
+  }
+
+  function confirmDeleteBoard() {
     if (!token) return;
+    if (!boardToDelete?._id) return;
 
-    if (!window.confirm("Are you sure you want to delete this board? All tasks in it will be lost.")) {
-      return;
-    }
-
-    fetch(`${API_BASE_URL}/boards/${boardId}`, {
+    fetch(`${API_BASE_URL}/boards/${boardToDelete._id}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -201,11 +220,13 @@ function App() {
         return res.json();
     })
     .then(() => {
-        const newBoards = boards.filter(b => b._id !== boardId);
+        const newBoards = boards.filter(b => b._id !== boardToDelete._id);
         setBoards(newBoards);
-        if (activeBoardId === boardId) {
+        if (activeBoardId === boardToDelete._id) {
             setActiveBoardId(newBoards.length > 0 ? newBoards[0]._id : null);
         }
+        setIsDeleteBoardOpen(false);
+        setBoardToDelete(null);
     })
     .catch((err) => {
         if (err.message !== "Unauthorized") console.error(err);
@@ -246,13 +267,19 @@ function App() {
         path="/"
         element={
           <ProtectedRoute token={token}>
-            <div className="flex">
+            <div className="flex min-h-screen">
               <Sidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
+                onToggle={() => setIsSidebarOpen((prev) => !prev)}
                 boards={boards}
                 activeBoardId={activeBoardId}
-                onBoardSelect={setActiveBoardId}
+                onBoardSelect={(id) => {
+                  setActiveBoardId(id);
+                  if (window.innerWidth < 768) {
+                    setIsSidebarOpen(false);
+                  }
+                }}
                 onNewBoard={() => setIsCreateBoardOpen(true)}
                 onEditBoard={(board) => {
                     setBoardToRename(board);
@@ -264,10 +291,10 @@ function App() {
                 toggleTheme={toggleTheme}
                 user={user}
               />
-              <div className={`flex-1 p-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-all duration-300 ease-in-out ${
+              <div className={`flex-1 p-4 sm:p-6 md:p-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-all duration-300 ease-in-out ${
                 isSidebarOpen ? "md:ml-60" : "md:ml-0"
               }`}>
-                <div className="mb-4">
+                <div className="mb-3 md:mb-4 md:hidden">
                   <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
@@ -329,6 +356,15 @@ function App() {
                     }
                 }}
                 currentName={boardToRename?.name || ""}
+            />
+            <DeleteBoardModal
+                isOpen={isDeleteBoardOpen}
+                boardName={boardToDelete?.name || ""}
+                onClose={() => {
+                  setIsDeleteBoardOpen(false);
+                  setBoardToDelete(null);
+                }}
+                onConfirm={confirmDeleteBoard}
             />
           </ProtectedRoute>
         }

@@ -3,7 +3,7 @@ export default function SearchBar({ searchQuery, onSearchChange, activeFilter, o
   const filters = ["all", "todo", "doing", "done"];
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
       {/* Search Input */}
       <div className="relative w-full sm:w-64">
         <input
@@ -26,12 +26,12 @@ export default function SearchBar({ searchQuery, onSearchChange, activeFilter, o
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg border border-slate-200 dark:border-slate-600">
+      <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg border border-slate-200 dark:border-slate-600 w-full sm:w-auto overflow-x-auto scrollbar-hide">
         {filters.map((filter) => (
           <button
             key={filter}
             onClick={() => onFilterChange(filter)}
-            className={`px-3 py-1.5 text-xs font-medium rounded transition-colors uppercase ${
+            className={`px-3 py-1.5 text-xs font-medium rounded transition-colors uppercase whitespace-nowrap ${
               activeFilter === filter
                 ? "bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm"
                 : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600/50"

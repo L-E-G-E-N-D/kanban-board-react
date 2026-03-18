@@ -1,6 +1,6 @@
 
 
-function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard, onDeleteBoard, onLogout, theme, toggleTheme, isOpen, onClose, user }) {
+function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard, onDeleteBoard, onLogout, theme, toggleTheme, isOpen, onClose, onToggle, user }) {
   return (
     <>
       {/* Mobile Overlay */}
@@ -12,13 +12,24 @@ function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard
       )}
 
       {/* Sidebar */}
-      <div className={`w-60 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-30 border-r border-slate-200 dark:border-slate-800 transition-transform duration-300 ease-in-out ${
+      <div className={`w-72 md:w-60 max-w-[85vw] bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-30 border-r border-slate-200 dark:border-slate-800 transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
       <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Kanban<span className="text-blue-600">Board</span>
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Kanban<span className="text-blue-600">Board</span>
+          </h1>
+          <button
+            onClick={onToggle}
+            className="p-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800 transition"
+            aria-label="Toggle Sidebar"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 py-4">
@@ -41,7 +52,7 @@ function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard
                          <span className="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 px-1.5 py-0.5 rounded-full font-medium">Shared</span>
                     )}
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button 
                         onClick={(e) => { e.stopPropagation(); onEditBoard(board); }}
                         className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
@@ -107,6 +118,18 @@ function Sidebar({ boards, activeBoardId, onBoardSelect, onNewBoard, onEditBoard
         </button>
       </div>
       </div>
+
+      {!isOpen && (
+        <button
+          onClick={onToggle}
+          className="fixed left-0 top-5 z-20 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-l-0 rounded-r-lg px-2 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
+          aria-label="Open Sidebar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+      )}
     </>
   );
 }

@@ -469,12 +469,12 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
 
   return (
     <div className="max-w-[1280px] mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
         <div className="flex items-center gap-3 group">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
                 onClick={() => setIsInviteOpen(true)}
                 className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition"
@@ -499,7 +499,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
                   <div className="p-3 border-b border-gray-200 dark:border-gray-700 font-semibold text-gray-900 dark:text-white flex justify-between items-center">
                     <h3>Notifications</h3>
                     <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">
@@ -540,7 +540,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
             </span>
           </div>
           
-          <div className="flex -space-x-2 overflow-hidden items-center ml-2 border-l border-slate-200 dark:border-slate-700 pl-4">
+          <div className="hidden sm:flex -space-x-2 overflow-hidden items-center ml-1 sm:ml-2 border-l border-slate-200 dark:border-slate-700 pl-3 sm:pl-4">
               {activeUsers.slice(0, 5).map((u, i) => (
                   <div 
                     key={i} 
@@ -597,7 +597,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         }
       />
 
-      <div className="flex gap-7 items-start">
+      <div className="flex flex-col xl:flex-row gap-6 xl:gap-7 items-start">
         <div className="flex-1 overflow-x-auto pb-6">
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex gap-4 sm:gap-6">
@@ -629,7 +629,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           </DragDropContext>
         </div>
 
-        <div className="w-72 shrink-0 space-y-6 sticky top-6">
+        <div className="w-full xl:w-72 shrink-0 space-y-6 xl:sticky xl:top-6">
           <div>
             <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Board Stats</h3>
             <StatsPanel tasks={tasks} analytics={analytics} />
