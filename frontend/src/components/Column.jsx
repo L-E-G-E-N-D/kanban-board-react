@@ -6,7 +6,7 @@ import { Droppable } from "@hello-pangea/dnd";
 function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
     const status = title.toLowerCase().replace(" ", "");
     return (
-      <div className="bg-slate-100/40 dark:bg-slate-900/40 rounded-2xl p-4 w-80 sm:w-96 border border-slate-200/60 dark:border-slate-800/60 transition-all flex flex-col h-full max-h-[85vh]">
+      <div className="bg-slate-100/50 dark:bg-slate-900/40 rounded-2xl p-4 w-80 sm:w-96 border border-slate-200/70 dark:border-slate-800/60 transition-all duration-200 flex flex-col h-full max-h-[85vh] shadow-sm hover:shadow-md">
         <div className="flex items-center justify-between mb-4 px-1 sticky top-0 bg-inherit z-10">
           <h2 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-widest uppercase">
             {title} <span className="ml-2 px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded-full text-[10px]">{tasks.length}</span>
@@ -20,7 +20,7 @@ function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
         <Droppable droppableId={status}>
           {(provided, snapshot) => (
             <div
-              className={`flex-1 pt-1 space-y-3 px-0.5 min-h-[150px] overflow-y-auto scrollbar-hide ${snapshot.isDraggingOver ? 'bg-slate-200/20 dark:bg-slate-800/10 rounded-xl' : ''}`}
+              className={`flex-1 pt-1 space-y-3 px-1 min-h-[150px] overflow-y-auto scrollbar-hide transition-colors ${snapshot.isDraggingOver ? 'bg-slate-200/40 dark:bg-slate-800/30 rounded-xl ring-1 ring-indigo-300/40 dark:ring-indigo-500/30' : ''}`}
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -48,7 +48,7 @@ function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
 
         <button 
           onClick={onAdd}
-          className="mt-4 w-full py-2.5 text-[13px] font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center justify-center gap-2 group"
+          className="mt-4 w-full py-2.5 text-[13px] font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center justify-center gap-2 group"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:scale-110 transition-transform" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />

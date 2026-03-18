@@ -20,8 +20,8 @@ function Task({ task, index, onDelete, onEdit }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`group bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)] cursor-grab transition-all duration-200
-            ${snapshot.isDragging ? "shadow-2xl ring-2 ring-indigo-500/20 dark:ring-indigo-400/20 scale-105" : "hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"}
+          className={`group bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-4 shadow-[0_2px_6px_rgba(15,23,42,0.05)] cursor-grab active:cursor-grabbing transition-all duration-200
+            ${snapshot.isDragging ? "shadow-2xl ring-2 ring-indigo-500/30 dark:ring-indigo-400/30 scale-[1.03] -rotate-1" : "hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"}
           `}
         >
           <div className="flex items-start justify-between gap-3">
