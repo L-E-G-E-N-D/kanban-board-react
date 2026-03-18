@@ -22,6 +22,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [activeUsers, setActiveUsers] = useState([]);
+  const [boardMembers, setBoardMembers] = useState([]);
 
   const openAddTask = useCallback((status) => {
     setTargetStatus(status);
@@ -62,7 +63,37 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       }
       
       addActivity(`Invited ${email} to board`);
+      fetchBoardMembers();
   };
+
+  const fetchBoardMembers = useCallback(async () => {
+    if (!activeBoardId || !token) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/boards/${activeBoardId}/members`, {
+        headers: authHeaders,
+      });
+
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error("Failed to load board members");
+      }
+
+      const data = await res.json();
+      const owner = data.owner ? [{ ...data.owner, isOwner: true }] : [];
+      const members = Array.isArray(data.members) ? data.members : [];
+      setBoardMembers([...owner, ...members]);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [activeBoardId, token, authHeaders, onLogout]);
+
+  useEffect(() => {
+    fetchBoardMembers();
+  }, [fetchBoardMembers]);
 
 
 
@@ -166,6 +197,10 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       setActivityLog((prev) => [activity, ...prev].slice(0, 30));
     };
 
+    const onSocketError = (payload) => {
+      setError(payload?.message || "Socket error");
+    };
+
     socket.on("connect", onConnect);
     socket.on("presence-update", onPresenceUpdate);
     socket.on("task-created", onTaskCreated);
@@ -174,6 +209,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     socket.on("task-deleted", onTaskDeleted);
     socket.on("board-snapshot", onBoardSnapshot);
     socket.on("new-activity", onNewActivity);
+    socket.on("socket-error", onSocketError);
 
     if (socket.connected) {
       onConnect();
@@ -189,6 +225,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
       socket.off("task-deleted", onTaskDeleted);
       socket.off("board-snapshot", onBoardSnapshot);
       socket.off("new-activity", onNewActivity);
+      socket.off("socket-error", onSocketError);
     };
   }, [activeBoardId, token, user, setTasks, setActivityLog]);
 
@@ -492,6 +529,10 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
                       +{activeUsers.length - 5} more
                   </span>
               )}
+          </div>
+
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            {activeUsers.length} online • {boardMembers.length} members
           </div>
         </div>
       </div>
