@@ -454,17 +454,29 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     
   }
 
+  const sortTasksByPriority = useCallback((items) => {
+    const priorityRank = { high: 0, medium: 1, low: 2 };
+    return [...items].sort((a, b) => {
+      const rankA = priorityRank[a.priority] ?? 3;
+      const rankB = priorityRank[b.priority] ?? 3;
+      if (rankA !== rankB) return rankA - rankB;
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    });
+  }, []);
+
   const todoTasks = useMemo(
-    () => tasks.filter((t) => t.status === "todo"),
-    [tasks]
+    () => sortTasksByPriority(tasks.filter((t) => t.status === "todo")),
+    [tasks, sortTasksByPriority]
   );
   const doingTasks = useMemo(
-    () => tasks.filter((t) => t.status === "doing"),
-    [tasks]
+    () => sortTasksByPriority(tasks.filter((t) => t.status === "doing")),
+    [tasks, sortTasksByPriority]
   );
   const doneTasks = useMemo(
-    () => tasks.filter((t) => t.status === "done"),
-    [tasks]
+    () => sortTasksByPriority(tasks.filter((t) => t.status === "done")),
+    [tasks, sortTasksByPriority]
   );
 
   return (
