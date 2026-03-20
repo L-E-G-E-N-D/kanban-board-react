@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Draggable } from "@hello-pangea/dnd";
-import { formatRelativeTime } from "../utils/dateUtils";
+import { formatRelativeTime, formatDueDate } from "../utils/dateUtils";
 
 function Task({ task, index, onDelete, onEdit }) {
   const handleDelete = (e) => {
@@ -26,24 +26,24 @@ function Task({ task, index, onDelete, onEdit }) {
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug">{task.title}</h3>
-                <div className="flex items-center gap-2">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug pr-1">{task.title}</h3>
+                <div className="flex flex-wrap justify-end items-center gap-1.5 max-w-[48%]">
                   {task.createdAt && (
                      <span className="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
                         {formatRelativeTime(task.createdAt)}
                      </span>
                   )}
                   {task.dueDate && (
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] text-gray-600 dark:text-gray-300 flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full whitespace-nowrap">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      <span className="truncate max-w-[72px]">{formatDueDate(task.dueDate)}</span>
                     </span>
                   )}
                   {task.priority && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap
                       ${task.priority === 'high' ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' :
                         task.priority === 'medium' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400' :
                         'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'

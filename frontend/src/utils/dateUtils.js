@@ -7,6 +7,7 @@ export function formatRelativeTime(dateString) {
     if (!dateString) return "";
 
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "";
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
 
@@ -22,4 +23,15 @@ export function formatRelativeTime(dateString) {
     if (days < 7) return `${days}d ago`;
 
     return date.toLocaleDateString();
+}
+
+export function formatDueDate(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+    });
 }
