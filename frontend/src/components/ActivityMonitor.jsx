@@ -8,7 +8,7 @@ function ActivityMonitor({ activities }) {
       {activities.length === 0 ? (
         <p className="text-xs text-slate-500 dark:text-slate-400 italic">No recent activity</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
           {activities.map((activity, index) => (
             <li key={activity._id || index} className="text-[11px] text-slate-600 dark:text-slate-300 border-l-2 border-indigo-500 pl-3 leading-relaxed">
               <span className="font-semibold text-slate-900 dark:text-white">
