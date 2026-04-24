@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup";
+import LandingPage from "./pages/LandingPage";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Board from "./pages/Board";
@@ -40,7 +41,7 @@ function App() {
     setUser(null);
     setActiveBoardId(null);
     setTasks([]);
-    navigate("/login");
+    navigate("/");
   }, [navigate, setToken, setUser, setActiveBoardId, setTasks]);
 
   useEffect(() => {
@@ -131,12 +132,6 @@ function App() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-
-
-  /* 
-   * RESTORING DELETED CODE
-   * The following functions were accidentally removed and are now being restored.
-   */
 
   function handleCreateBoard(name) {
     if (!token) return;
@@ -239,11 +234,9 @@ function App() {
   const activeBoard = boards.find(b => b._id === activeBoardId);
 
   const filteredTasks = tasks.filter((task) => {
-    // Filter by Search Query
     if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
     }
-    // Filter by Status
     if (activeFilter !== "all" && task.status !== activeFilter) {
         return false;
     }
@@ -263,8 +256,9 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute token={token}>
             <div className="flex min-h-screen">
@@ -378,7 +372,7 @@ function App() {
               localStorage.setItem("user", JSON.stringify(userData));
               setToken(tok);
               setUser(userData);
-              navigate("/");
+              navigate("/dashboard");
             }}
             onSwitch={() => navigate("/signup")}
           />
@@ -393,7 +387,7 @@ function App() {
               localStorage.setItem("user", JSON.stringify(userData));
               setToken(tok);
               setUser(userData);
-              navigate("/");
+              navigate("/dashboard");
             }}
             onSwitch={() => navigate("/login")} 
           />
@@ -401,7 +395,7 @@ function App() {
       />
       <Route
         path="*"
-        element={<Navigate to={token ? "/" : "/login"} replace />}
+        element={<Navigate to="/" replace />}
       />
     </Routes>
   );
