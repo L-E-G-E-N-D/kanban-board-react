@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Layout, 
@@ -9,8 +10,8 @@ import {
   ArrowRight,
   ChevronRight
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import AuthModal from "../components/AuthModal";
 
 const features = [
   {
@@ -69,10 +70,15 @@ const itemVariants = {
   }
 };
 
-export default function LandingPage() {
+export default function LandingPage({ onLoginSuccess }) {
+  const [authModal, setAuthModal] = useState({ isOpen: false, mode: "login" });
+
+  const openAuth = (mode) => setAuthModal({ isOpen: true, mode });
+  const closeAuth = () => setAuthModal({ ...authModal, isOpen: false });
+
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500/30">
-      <Navbar />
+      <Navbar onOpenAuth={openAuth} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -99,14 +105,11 @@ export default function LandingPage() {
                 Streamline your projects, collaborate with your team, and stay organized with the most intuitive Kanban experience built for modern creators.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link 
-                  to="/signup" 
+                <button 
+                  onClick={() => openAuth("signup")}
                   className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-xl shadow-indigo-500/25"
                 >
                   Get Started for Free <ArrowRight className="w-5 h-5" />
-                </Link>
-                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-xl font-semibold transition-all border border-white/10">
-                  View Demo
                 </button>
               </div>
             </motion.div>
@@ -272,6 +275,13 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <AuthModal 
+        isOpen={authModal.isOpen} 
+        mode={authModal.mode} 
+        onClose={closeAuth} 
+        onLoginSuccess={onLoginSuccess}
+      />
     </div>
   );
 }

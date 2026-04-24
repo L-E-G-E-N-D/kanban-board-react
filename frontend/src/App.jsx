@@ -1,6 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup";
 import LandingPage from "./pages/LandingPage";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -32,6 +30,14 @@ function App() {
     return window.innerWidth >= 768;
   });
   const [isVerifying, setIsVerifying] = useState(!!token);
+
+  const handleLoginSuccess = (tok, userData) => {
+    localStorage.setItem("token", tok);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setToken(tok);
+    setUser(userData);
+    navigate("/dashboard");
+  };
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
@@ -256,7 +262,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<LandingPage onLoginSuccess={handleLoginSuccess} />} />
       <Route
         path="/dashboard"
         element={
@@ -361,36 +367,6 @@ function App() {
                 onConfirm={confirmDeleteBoard}
             />
           </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/login"
-        element={
-          <Login
-            onLogin={(tok, userData) => {
-              localStorage.setItem("token", tok);
-              localStorage.setItem("user", JSON.stringify(userData));
-              setToken(tok);
-              setUser(userData);
-              navigate("/dashboard");
-            }}
-            onSwitch={() => navigate("/signup")}
-          />
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          <Signup 
-            onLogin={(tok, userData) => {
-              localStorage.setItem("token", tok);
-              localStorage.setItem("user", JSON.stringify(userData));
-              setToken(tok);
-              setUser(userData);
-              navigate("/dashboard");
-            }}
-            onSwitch={() => navigate("/login")} 
-          />
         }
       />
       <Route

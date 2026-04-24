@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import { Layout } from "lucide-react";
 
-export default function Navbar() {
+export default function Navbar({ onOpenAuth }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,18 +19,18 @@ export default function Navbar() {
             <a href="#why" className="hover:text-white transition-colors">Why Us</a>
           </div>
           <div className="flex items-center gap-4">
-            <Link 
-              to="/login" 
+            <button 
+              onClick={() => onOpenAuth("login")}
               className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
             >
               Sign In
-            </Link>
-            <Link 
-              to="/signup" 
+            </button>
+            <button 
+              onClick={() => onOpenAuth("signup")}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all shadow-lg shadow-indigo-500/20"
             >
               Get Started
-            </Link>
+            </button>
           </div>
         </div>
       </div>
