@@ -1,5 +1,7 @@
 import { memo } from "react";
+import { createPortal } from "react-dom";
 import { Draggable } from "@hello-pangea/dnd";
+import { Calendar, Edit3, Trash2, Clock } from "lucide-react";
 import { formatRelativeTime, formatDueDate } from "../utils/dateUtils";
 
 function Task({ task, index, onDelete, onEdit }) {
@@ -13,98 +15,96 @@ function Task({ task, index, onDelete, onEdit }) {
     onEdit(task);
   };
 
+  const priorityStyles = {
+    high: "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-[0_0_12px_rgba(244,63,94,0.1)]",
+    medium: "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.1)]",
+    low: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.1)]",
+  };
+
   return (
     <Draggable draggableId={task._id} index={index}>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className={`group bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-4 shadow-[0_2px_6px_rgba(15,23,42,0.05)] cursor-grab active:cursor-grabbing transition-all duration-200
-            ${snapshot.isDragging ? "shadow-2xl ring-2 ring-indigo-500/30 dark:ring-indigo-400/30 scale-[1.03] -rotate-1" : "hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"}
-          `}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1 text-sm leading-snug pr-1">{task.title}</h3>
-                <div className="flex flex-wrap justify-end items-center gap-1.5 max-w-[48%]">
-                  {task.createdAt && (
-                     <span className="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                        {formatRelativeTime(task.createdAt)}
-                     </span>
-                  )}
-                  {task.dueDate && (
-                    <span className="text-[10px] text-gray-600 dark:text-gray-300 flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span className="truncate max-w-[72px]">{formatDueDate(task.dueDate)}</span>
-                    </span>
-                  )}
+      {(provided, snapshot) => {
+        const content = (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            className={`group glass-dark rounded-2xl p-5 cursor-grab active:cursor-grabbing border border-white/5
+              ${snapshot.isDragging 
+                ? "shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-white/20 z-[1000] bg-white/[0.15] backdrop-blur-2xl" 
+                : "hover:border-white/10 hover:bg-white/[0.03] shadow-lg shadow-black/20 transition-all duration-300"
+              }
+            `}
+            style={{
+                ...provided.draggableProps.style,
+                // Refine visibility during drag
+                opacity: snapshot.isDragging ? 0.9 : 1,
+            }}
+          >
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-1.5 min-w-0">
                   {task.priority && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap
-                      ${task.priority === 'high' ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' :
-                        task.priority === 'medium' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400' :
-                        'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
-                      }
-                    `}>
+                    <span className={`self-start text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border ${priorityStyles[task.priority] || priorityStyles.medium}`}>
                       {task.priority}
                     </span>
                   )}
+                  <h3 className="font-bold text-white text-sm leading-snug break-words">
+                    {task.title}
+                  </h3>
+                </div>
+                
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={handleEdit}
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="p-1.5 rounded-lg hover:bg-rose-500/10 text-gray-500 hover:text-rose-400 transition"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
+
               {task.description && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
                   {task.description}
                 </p>
               )}
-            </div>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={handleEdit}
-                className="flex-shrink-0 text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                title="Edit task"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3.5 w-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.232 5.232l3.536 3.536M4 17.25V21h3.75L17.81 10.94a1.5 1.5 0 000-2.121l-3.63-3.63a1.5 1.5 0 00-2.12 0L4 17.25z"
-                  />
-                </svg>
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex-shrink-0 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                title="Delete task"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3.5 w-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </button>
+
+              <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-1">
+                <div className="flex items-center gap-3">
+                  {task.dueDate && (
+                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-500">
+                      <Calendar className="w-3 h-3" />
+                      {formatDueDate(task.dueDate)}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-500">
+                    <Clock className="w-3 h-3" />
+                    {formatRelativeTime(task.createdAt)}
+                  </div>
+                </div>
+                
+                <div className="flex -space-x-1.5">
+                  <div className="w-5 h-5 rounded-full border border-[#050505] bg-indigo-500 flex items-center justify-center text-[8px] font-bold text-white">
+                    T
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+
+        if (snapshot.isDragging) {
+          return createPortal(content, document.body);
+        }
+        return content;
+      }}
     </Draggable>
   );
 }

@@ -291,7 +291,7 @@ function App() {
                 toggleTheme={toggleTheme}
                 user={user}
               />
-              <div className={`flex-1 p-4 sm:p-6 md:p-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-all duration-300 ease-in-out ${
+              <div className={`flex-1 p-4 sm:p-6 md:p-8 bg-[#050505] min-h-screen transition-all duration-300 ease-in-out ${
                 isSidebarOpen ? "md:ml-60" : "md:ml-0"
               }`}>
                 <div className="mb-3 md:mb-4 md:hidden">

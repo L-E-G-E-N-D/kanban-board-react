@@ -1,45 +1,53 @@
+import { Search, X, Filter } from "lucide-react";
 
 export default function SearchBar({ searchQuery, onSearchChange, activeFilter, onFilterChange }) {
   const filters = ["all", "todo", "doing", "done"];
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
+    <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center w-full">
       {/* Search Input */}
-      <div className="relative w-full sm:w-64">
+      <div className="relative flex-1 group">
+        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-indigo-400 transition-colors">
+          <Search className="w-4 h-4" />
+        </div>
         <input
           type="text"
-          placeholder="Search tasks..."
+          placeholder="Search for tasks, descriptions, or tags..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 border border-slate-200 dark:border-slate-600 shadow-sm transition-colors"
+          className="w-full bg-white/[0.03] border border-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl pl-11 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner"
         />
         {searchQuery && (
           <button
             onClick={() => onSearchChange("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-white/10 text-gray-400 hover:text-white transition"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
+            <X className="w-4 h-4" />
           </button>
         )}
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg border border-slate-200 dark:border-slate-600 w-full sm:w-auto overflow-x-auto scrollbar-hide">
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => onFilterChange(filter)}
-            className={`px-3 py-1.5 text-xs font-medium rounded transition-colors uppercase whitespace-nowrap ${
-              activeFilter === filter
-                ? "bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm"
-                : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600/50"
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+        <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/5 rounded-xl">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => onFilterChange(filter)}
+              className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all uppercase tracking-widest whitespace-nowrap ${
+                activeFilter === filter
+                  ? "bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.3)] scale-105"
+                  : "text-gray-500 hover:text-gray-300 hover:bg-white/5"
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+        
+        <button className="p-3 bg-white/[0.03] border border-white/5 rounded-xl text-gray-500 hover:text-white hover:bg-white/5 transition hidden sm:flex">
+          <Filter className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

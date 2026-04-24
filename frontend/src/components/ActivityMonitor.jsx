@@ -1,31 +1,51 @@
+import { Clock } from "lucide-react";
 
 function ActivityMonitor({ activities }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 transition-colors">
-      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-3">
-        Recent Activity
-      </h3>
+    <div className="space-y-4">
       {activities.length === 0 ? (
-        <p className="text-xs text-slate-500 dark:text-slate-400 italic">No recent activity</p>
+        <div className="flex flex-col items-center justify-center py-10 opacity-40">
+           <Clock className="w-8 h-8 text-gray-500 mb-2" />
+           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">Silent Waters</p>
+        </div>
       ) : (
-        <ul className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-          {activities.map((activity, index) => (
-            <li key={activity._id || index} className="text-[11px] text-slate-600 dark:text-slate-300 border-l-2 border-indigo-500 pl-3 leading-relaxed">
-              <span className="font-semibold text-slate-900 dark:text-white">
-                {activity.userId?.name || "Someone"}
-              </span>{" "}
-              {activity.action}
-              {activity.details && (
-                <span className="text-slate-500 italic block mt-0.5 ml-1">
-                  "{activity.details}"
-                </span>
-              )}
-              <span className="text-[10px] text-slate-400 block mt-1">
-                {new Date(activity.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="relative">
+          {/* Timeline Line */}
+          <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-indigo-500/50 via-purple-500/50 to-transparent rounded-full" />
+          
+          <ul className="space-y-6">
+            {activities.map((activity, index) => (
+              <li key={activity._id || index} className="relative pl-8 group">
+                {/* Dot */}
+                <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-[#0a0a0a] border border-white/10 flex items-center justify-center z-10 group-hover:border-indigo-500/50 transition-colors">
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                </div>
+                
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[11px] text-gray-300 leading-tight">
+                      <span className="font-bold text-white">
+                        {activity.userId?.name || "System"}
+                      </span>{" "}
+                      <span className="text-gray-500">{activity.action}</span>
+                    </p>
+                    <span className="text-[9px] font-bold text-gray-600 whitespace-nowrap">
+                      {new Date(activity.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  
+                  {activity.details && (
+                    <div className="bg-white/[0.03] border border-white/5 rounded-lg px-3 py-2 mt-1">
+                      <p className="text-[10px] text-gray-400 italic leading-relaxed">
+                        "{activity.details}"
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

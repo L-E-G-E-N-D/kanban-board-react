@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { X } from "lucide-react";
 
 function CreateBoardModal({ isOpen, onClose, onCreateBoard }) {
   const [name, setName] = useState("");
@@ -21,70 +22,60 @@ function CreateBoardModal({ isOpen, onClose, onCreateBoard }) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[100] px-4 animate-in fade-in duration-300"
       onClick={handleClose}
     >
       <div 
-        className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md transition-colors border border-gray-200 dark:border-gray-800"
+        className="glass-dark rounded-[2rem] shadow-2xl w-full max-w-md border border-white/10 overflow-hidden animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-800">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Board</h2>
+        <div className="flex justify-between items-center p-8 border-b border-white/5">
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Create Board</h2>
+            <p className="text-xs text-gray-500 mt-1">Organize your projects in a new workspace</p>
+          </div>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+            className="p-2 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="p-8">
+          <div className="mb-8">
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              className="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-3"
             >
-              Board Name <span className="text-red-500">*</span>
+              Workspace Name
             </label>
             <input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter board name"
-              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-800 dark:text-white"
+              placeholder="e.g. Marketing Launch, Q3 Roadmap..."
+              className="w-full bg-white/[0.03] border border-white/5 text-white placeholder:text-gray-600 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner"
               required
               autoFocus
               autoComplete="off"
             />
           </div>
 
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-4">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              className="flex-1 px-6 py-3.5 text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition shadow-sm dark:bg-gray-700 dark:hover:bg-gray-600"
+              className="flex-1 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 active:scale-[0.98]"
             >
-              Create Board
+              Build Board
             </button>
           </div>
         </form>

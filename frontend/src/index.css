@@ -11,4 +11,20 @@
   .animate-shake {
     animation: shake 0.2s ease-in-out 0s 2;
   }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-2xl border border-white/5;
+  }
+
+  .text-glow-indigo {
+    text-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+  }
+}
+
+body {
+  @apply bg-[#050505] text-slate-200 antialiased selection:bg-indigo-500/30;
 }

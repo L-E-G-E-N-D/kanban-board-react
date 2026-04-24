@@ -1,5 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
+import { 
+  Users, 
+  Bell, 
+  Share2, 
+  Search, 
+  Filter, 
+  Plus, 
+  Layout as LayoutIcon,
+  ChevronDown,
+  Activity,
+  BarChart3
+} from "lucide-react";
 import Column from "../components/Column";
 import AddTaskModal from "../components/AddTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
@@ -217,7 +229,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
     };
 
     const onNewActivity = (activity) => {
-      setActivityLog((prev) => [activity, ...prev].slice(0, 30));
+      setActivityLog((prev) => [activity, ...prev].slice(0, 5));
     };
 
     const onSocketError = (payload) => {
@@ -286,7 +298,7 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         headers: authHeaders,
     })
     .then(res => res.json())
-    .then(data => setActivityLog(data || []))
+    .then(data => setActivityLog((data || []).slice(0, 5)))
     .catch(err => console.error("Failed to fetch activity", err));
 
     fetchAnalytics();
@@ -480,60 +492,100 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
   );
 
   return (
-    <div className="max-w-[1280px] mx-auto">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
-        <div className="flex items-center gap-3 group">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{boardName || "Kanban Board"}</h1>
+    <div className="max-w-[1400px] mx-auto pb-10">
+      {/* Premium Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+              <LayoutIcon className="w-5 h-5" />
+            </div>
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              {boardName || "My Workspace"}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+              <span>{activeUsers.length} Online</span>
+            </div>
+            <span className="w-1 h-1 rounded-full bg-gray-700"></span>
+            <div className="flex items-center gap-1.5">
+              <Users className="w-4 h-4" />
+              <span>{boardMembers.length} Members</span>
+            </div>
+          </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Active Users Avatars */}
+          <div className="flex -space-x-3 overflow-hidden">
+              {activeUsers.slice(0, 5).map((u, i) => (
+                  <div 
+                    key={i} 
+                    className="h-9 w-9 rounded-full ring-4 ring-[#050505] bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/10 flex items-center justify-center text-xs font-bold text-white shadow-xl"
+                    title={u.name || u.email}
+                  >
+                      {(u.name || u.email || 'A').charAt(0).toUpperCase()}
+                  </div>
+              ))}
+              {activeUsers.length > 5 && (
+                  <div className="h-9 w-9 rounded-full ring-4 ring-[#050505] bg-gray-800 border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                      +{activeUsers.length - 5}
+                  </div>
+              )}
+          </div>
+
+          <div className="h-8 w-[1px] bg-white/10 mx-2 hidden sm:block"></div>
+
+          <div className="flex items-center gap-3">
             <button
-                onClick={() => setIsInviteOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition"
+              onClick={() => setIsInviteOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition shadow-lg shadow-indigo-600/20"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                </svg>
-                Share
+              <Share2 className="w-4 h-4" />
+              Share
             </button>
-          <div className="flex items-center gap-2">
+            
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full relative transition"
+                className={`p-2.5 rounded-xl border transition-all relative ${
+                  showNotifications 
+                    ? "bg-white/10 border-white/20 text-white" 
+                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                }`}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
+                <Bell className="w-5 h-5" />
                 {notifications.some(n => !n.isRead) && (
-                  <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
+                  <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-rose-500 rounded-full border-2 border-[#050505]"></span>
                 )}
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
-                  <div className="p-3 border-b border-gray-200 dark:border-gray-700 font-semibold text-gray-900 dark:text-white flex justify-between items-center">
-                    <h3>Notifications</h3>
-                    <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">
-                      {notifications.filter(n => !n.isRead).length} new
+                <div className="absolute right-0 mt-4 w-80 glass-dark rounded-2xl shadow-2xl border border-white/10 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
+                  <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/5">
+                    <h3 className="font-bold text-white">Notifications</h3>
+                    <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                      {notifications.filter(n => !n.isRead).length} New
                     </span>
                   </div>
-                  <div className="max-h-80 overflow-y-auto">
+                  <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                     {notifications.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                        No notifications
+                      <div className="p-10 text-center text-sm text-gray-500">
+                        No notifications yet
                       </div>
                     ) : (
                       notifications.map(notification => (
                         <div 
                           key={notification._id} 
                           onClick={() => markAsRead(notification._id)}
-                          className={`p-3 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-750 transition cursor-pointer ${!notification.isRead ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                          className={`p-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition cursor-pointer ${!notification.isRead ? 'bg-indigo-500/5' : ''}`}
                         >
-                          <p className={`text-sm text-gray-800 dark:text-gray-200 ${!notification.isRead ? 'font-medium' : ''}`}>
+                          <p className={`text-sm text-gray-300 ${!notification.isRead ? 'font-medium text-white' : ''}`}>
                             {notification.message}
                           </p>
-                          <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 block">
+                          <span className="text-[10px] text-gray-500 mt-2 block font-medium">
                             {new Date(notification.createdAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -543,39 +595,11 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
                 </div>
               )}
             </div>
-
-            <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-semibold text-sm border border-slate-300 dark:border-slate-600">
-                {user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
-            </div>
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">
-                {user?.name || user?.email || "User"}
-            </span>
-          </div>
-          
-          <div className="hidden sm:flex -space-x-2 overflow-hidden items-center ml-1 sm:ml-2 border-l border-slate-200 dark:border-slate-700 pl-3 sm:pl-4">
-              {activeUsers.slice(0, 5).map((u, i) => (
-                  <div 
-                    key={i} 
-                    className="inline-block h-7 w-7 rounded-full ring-2 ring-white dark:ring-gray-900 bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-[10px] font-bold text-blue-700 dark:text-blue-300"
-                    title={u.name || u.email}
-                  >
-                      {(u.name || u.email || 'A').charAt(0).toUpperCase()}
-                  </div>
-              ))}
-              {activeUsers.length > 5 && (
-                  <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">
-                      +{activeUsers.length - 5} more
-                  </span>
-              )}
-          </div>
-
-          <div className="text-xs text-slate-500 dark:text-slate-400">
-            {activeUsers.length} online • {boardMembers.length} members
           </div>
         </div>
       </div>
 
-      <div className="mb-7">
+      <div className="mb-10 p-1 glass-dark rounded-2xl">
         <SearchBar 
             searchQuery={searchQuery}
             onSearchChange={onSearchChange}
@@ -584,9 +608,71 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         />
       </div>
 
-      {loading && <p className="mb-2 dark:text-slate-300">Loading tasks...</p>}
-      {error && <p className="mb-2 text-red-500 dark:text-red-400">{error}</p>}
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm font-medium flex items-center gap-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>
+          {error}
+        </div>
+      )}
 
+      <div className="flex flex-col xl:flex-row gap-8 items-start">
+        <div className="flex-1 w-full overflow-x-auto pb-6 no-scrollbar">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex gap-6 min-h-[700px]">
+              <Column
+                id="todo"
+                title="To Do"
+                tasks={todoTasks}
+                onMove={syncTaskStatus}
+                onDelete={deleteTask}
+                onEdit={openEdit}
+                onAdd={() => openAddTask("todo")}
+                accentColor="indigo"
+              />
+              <Column
+                id="doing"
+                title="In Progress"
+                tasks={doingTasks}
+                onMove={syncTaskStatus}
+                onDelete={deleteTask}
+                onEdit={openEdit}
+                onAdd={() => openAddTask("doing")}
+                accentColor="purple"
+              />
+              <Column
+                id="done"
+                title="Completed"
+                tasks={doneTasks}
+                onMove={syncTaskStatus}
+                onDelete={deleteTask}
+                onEdit={openEdit}
+                onAdd={() => openAddTask("done")}
+                accentColor="emerald"
+              />
+            </div>
+          </DragDropContext>
+        </div>
+
+        <div className="w-full xl:w-80 shrink-0 space-y-8 xl:sticky xl:top-6">
+          <div className="glass-dark rounded-3xl p-6 border border-white/5">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart3 className="w-5 h-5 text-indigo-400" />
+              <h3 className="text-lg font-bold text-white">Board Analytics</h3>
+            </div>
+            <StatsPanel tasks={tasks} analytics={analytics} />
+          </div>
+          
+          <div className="glass-dark rounded-3xl p-6 border border-white/5">
+            <div className="flex items-center gap-2 mb-6">
+              <Activity className="w-5 h-5 text-purple-400" />
+              <h3 className="text-lg font-bold text-white">Activity Flow</h3>
+            </div>
+            <ActivityMonitor activities={activityLog} />
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
       <AddTaskModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -608,47 +694,6 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
           updateTask(editingTask._id, { title, description, priority, dueDate })
         }
       />
-
-      <div className="flex flex-col xl:flex-row gap-6 xl:gap-7 items-start">
-        <div className="flex-1 overflow-x-auto pb-6">
-          <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex gap-4 sm:gap-6">
-              <Column
-                title="To Do"
-                tasks={todoTasks}
-                onMove={syncTaskStatus}
-                onDelete={deleteTask}
-                onEdit={openEdit}
-                onAdd={() => openAddTask("todo")}
-              />
-              <Column
-                title="Doing"
-                tasks={doingTasks}
-                onMove={syncTaskStatus}
-                onDelete={deleteTask}
-                onEdit={openEdit}
-                onAdd={() => openAddTask("doing")}
-              />
-              <Column
-                title="Done"
-                tasks={doneTasks}
-                onMove={syncTaskStatus}
-                onDelete={deleteTask}
-                onEdit={openEdit}
-                onAdd={() => openAddTask("done")}
-              />
-            </div>
-          </DragDropContext>
-        </div>
-
-        <div className="w-full xl:w-72 shrink-0 space-y-6 xl:sticky xl:top-6">
-          <div>
-            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Board Stats</h3>
-            <StatsPanel tasks={tasks} analytics={analytics} />
-          </div>
-          <ActivityMonitor activities={activityLog} />
-        </div>
-      </div>
     </div>
   );
 }

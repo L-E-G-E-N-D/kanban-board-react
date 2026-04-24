@@ -1,26 +1,48 @@
 import { memo } from "react";
 import Task from "./Task";
 import { Droppable } from "@hello-pangea/dnd";
+import { Plus, MoreHorizontal } from "lucide-react";
 
+function Column({ id, title, tasks, onMove, onDelete, onEdit, onAdd, accentColor = "indigo" }) {
+    const status = id;
+    
+    const colors = {
+        indigo: "from-indigo-500 to-blue-600",
+        purple: "from-purple-500 to-pink-600",
+        emerald: "from-emerald-500 to-teal-600",
+    };
 
-function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
-    const status = title.toLowerCase().replace(" ", "");
+    const textColors = {
+        indigo: "text-indigo-400",
+        purple: "text-purple-400",
+        emerald: "text-emerald-400",
+    };
+
     return (
-      <div className="bg-slate-100/50 dark:bg-slate-900/40 rounded-2xl p-4 w-[84vw] sm:w-80 lg:w-96 border border-slate-200/70 dark:border-slate-800/60 transition-all duration-200 flex flex-col h-full max-h-[85vh] shadow-sm hover:shadow-md">
-        <div className="flex items-center justify-between mb-4 px-1 sticky top-0 bg-inherit z-10">
-          <h2 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-widest uppercase">
-            {title} <span className="ml-2 px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded-full text-[10px]">{tasks.length}</span>
-          </h2>
-          <div className="flex gap-1">
-             <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-             <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-             <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+      <div className="glass-dark rounded-[2rem] p-5 w-[85vw] sm:w-[350px] lg:w-[380px] border border-white/5 flex flex-col h-full max-h-[800px] relative group/column">
+        {/* Accent Top Bar */}
+        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${colors[accentColor] || colors.indigo} rounded-t-[2rem]`} />
+        
+        <div className="flex items-center justify-between mb-6 px-1">
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-bold text-white tracking-wide">
+              {title}
+            </h2>
+            <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-gray-400">
+              {tasks.length}
+            </span>
           </div>
+          <button className="p-1 text-gray-500 hover:text-white transition">
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
         </div>
+
         <Droppable droppableId={status}>
           {(provided, snapshot) => (
             <div
-              className={`flex-1 pt-1 space-y-3 px-1 min-h-[150px] overflow-y-auto scrollbar-hide transition-colors ${snapshot.isDraggingOver ? 'bg-slate-200/40 dark:bg-slate-800/30 rounded-xl ring-1 ring-indigo-300/40 dark:ring-indigo-500/30' : ''}`}
+              className={`flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar min-h-[200px] rounded-2xl transition-all duration-300 ${
+                snapshot.isDraggingOver ? 'bg-white/[0.02] ring-1 ring-white/10' : ''
+              }`}
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -35,9 +57,9 @@ function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
                 />
               ))}
               {tasks.length === 0 && !snapshot.isDraggingOver && (
-                <div className="h-full flex items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-widest italic">
-                    No Tasks
+                <div className="flex-1 flex flex-col items-center justify-center p-10 border-2 border-dashed border-white/5 rounded-3xl opacity-40">
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">
+                    Empty List
                   </p>
                 </div>
               )}
@@ -48,12 +70,12 @@ function Column({ title, tasks, onMove, onDelete, onEdit, onAdd }) {
 
         <button 
           onClick={onAdd}
-          className="mt-4 w-full py-2.5 text-[13px] font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center justify-center gap-2 group"
+          className={`mt-6 w-full py-3.5 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all flex items-center justify-center gap-2 group/btn ${textColors[accentColor] || textColors.indigo}`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:scale-110 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-          Add Task
+          <div className={`p-1 rounded-lg bg-current opacity-20 group-hover/btn:opacity-30 transition-opacity`}>
+            <Plus className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider">Add Task</span>
         </button>
       </div>
     );
