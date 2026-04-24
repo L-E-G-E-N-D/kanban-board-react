@@ -49,7 +49,7 @@ function Task({ task, index, onDelete, onEdit }) {
                       {task.priority}
                     </span>
                   )}
-                  <h3 className="font-bold text-white text-sm leading-snug break-words">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug break-words">
                     {task.title}
                   </h3>
                 </div>
@@ -57,7 +57,7 @@ function Task({ task, index, onDelete, onEdit }) {
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={handleEdit}
-                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition"
+                    className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>

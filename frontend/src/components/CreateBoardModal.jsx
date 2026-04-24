@@ -26,17 +26,17 @@ function CreateBoardModal({ isOpen, onClose, onCreateBoard }) {
       onClick={handleClose}
     >
       <div 
-        className="glass-dark rounded-[2rem] shadow-2xl w-full max-w-md border border-white/10 overflow-hidden animate-in zoom-in-95 duration-300"
+        className="glass rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-8 border-b border-white/5">
+        <div className="flex justify-between items-center p-8 border-b border-gray-100 dark:border-white/5">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Create Board</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Create Board</h2>
             <p className="text-xs text-gray-500 mt-1">Organize your projects in a new workspace</p>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition"
+            className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -56,7 +56,7 @@ function CreateBoardModal({ isOpen, onClose, onCreateBoard }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Marketing Launch, Q3 Roadmap..."
-              className="w-full bg-white/[0.03] border border-white/5 text-white placeholder:text-gray-600 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner"
+              className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner"
               required
               autoFocus
               autoComplete="off"
@@ -67,7 +67,7 @@ function CreateBoardModal({ isOpen, onClose, onCreateBoard }) {
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-6 py-3.5 text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+              className="flex-1 px-6 py-3.5 text-sm font-bold text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all"
             >
               Cancel
             </button>

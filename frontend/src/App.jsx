@@ -262,7 +262,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage onLoginSuccess={handleLoginSuccess} />} />
+      <Route path="/" element={<LandingPage onLoginSuccess={handleLoginSuccess} theme={theme} toggleTheme={toggleTheme} />} />
       <Route
         path="/dashboard"
         element={
@@ -291,13 +291,13 @@ function App() {
                 toggleTheme={toggleTheme}
                 user={user}
               />
-              <div className={`flex-1 p-4 sm:p-6 md:p-8 bg-[#050505] min-h-screen transition-all duration-300 ease-in-out ${
+              <div className={`flex-1 p-4 sm:p-6 md:p-8 min-h-screen transition-all duration-300 ease-in-out ${
                 isSidebarOpen ? "md:ml-60" : "md:ml-0"
               }`}>
                 <div className="mb-3 md:mb-4 md:hidden">
                   <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                    className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                     aria-label="Toggle Sidebar"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

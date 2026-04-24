@@ -38,17 +38,17 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
       onClick={handleClose}
     >
       <div
-        className="glass-dark rounded-[2.5rem] shadow-2xl w-full max-w-lg border border-white/10 overflow-hidden animate-in zoom-in-95 duration-300"
+        className="glass rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-8 border-b border-white/5">
+        <div className="flex justify-between items-center p-8 border-b border-gray-100 dark:border-white/5">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Edit Task</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Edit Task</h2>
             <p className="text-xs text-gray-500 mt-1">Refine the details of your task</p>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition"
+            className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -65,7 +65,7 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full bg-white/[0.03] border border-white/5 text-white placeholder:text-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner"
+              className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner"
               required
               autoFocus
               autoComplete="off"
@@ -81,7 +81,7 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add more details or notes..."
               rows={3}
-              className="w-full bg-white/[0.03] border border-white/5 text-white placeholder:text-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner resize-none"
+              className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all shadow-inner resize-none"
             />
           </div>
 
@@ -94,11 +94,11 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/5 text-white rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer"
+                className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/5 text-gray-900 dark:text-white rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer"
               >
-                <option value="low" className="bg-[#0a0a0a]">Low</option>
-                <option value="medium" className="bg-[#0a0a0a]">Medium</option>
-                <option value="high" className="bg-[#0a0a0a]">High</option>
+                <option value="low" className="bg-white dark:bg-[#0a0a0a]">Low</option>
+                <option value="medium" className="bg-white dark:bg-[#0a0a0a]">Medium</option>
+                <option value="high" className="bg-white dark:bg-[#0a0a0a]">High</option>
               </select>
             </div>
 
@@ -111,7 +111,7 @@ function EditTaskModal({ isOpen, task, onClose, onSave }) {
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/5 text-white rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer"
+                className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/5 text-gray-900 dark:text-white rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer"
               />
             </div>
           </div>

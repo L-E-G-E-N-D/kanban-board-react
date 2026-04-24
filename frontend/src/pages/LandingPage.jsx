@@ -70,15 +70,15 @@ const itemVariants = {
   }
 };
 
-export default function LandingPage({ onLoginSuccess }) {
+export default function LandingPage({ onLoginSuccess, theme, toggleTheme }) {
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: "login" });
 
   const openAuth = (mode) => setAuthModal({ isOpen: true, mode });
   const closeAuth = () => setAuthModal({ ...authModal, isOpen: false });
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500/30">
-      <Navbar onOpenAuth={openAuth} />
+    <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white selection:bg-indigo-500/30">
+      <Navbar onOpenAuth={openAuth} theme={theme} toggleTheme={toggleTheme} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -91,17 +91,17 @@ export default function LandingPage({ onLoginSuccess }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-xs font-semibold mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/5 dark:bg-white/5 border border-indigo-100 dark:border-white/10 text-indigo-600 dark:text-indigo-400 text-xs font-semibold mb-6">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                 </span>
                 New: Real-time Collaboration
               </div>
-              <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/50">
-                Master Your Workflow with <span className="text-indigo-500">Precision.</span>
+              <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 dark:from-white via-gray-800 dark:via-white to-gray-400 dark:to-white/50">
+                Master Your Workflow with <span className="text-indigo-600 dark:text-indigo-500">Precision.</span>
               </h1>
-              <p className="text-lg text-gray-400 mb-10 max-w-xl leading-relaxed">
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-xl leading-relaxed">
                 Streamline your projects, collaborate with your team, and stay organized with the most intuitive Kanban experience built for modern creators.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -121,22 +121,22 @@ export default function LandingPage({ onLoginSuccess }) {
               className="relative"
             >
               <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full -z-10" />
-              <div className="rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/50 bg-[#0a0a0a]">
+              <div className="rounded-2xl border border-gray-100 dark:border-white/10 overflow-hidden shadow-2xl shadow-indigo-900/10 dark:shadow-black/50 bg-gray-50 dark:bg-[#0a0a0a]">
                 <img 
                   src="/landing-preview.png" 
                   alt="Kanban Board Preview" 
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover opacity-90 dark:opacity-100"
                 />
               </div>
               {/* Floating Badge */}
-              <div className="absolute -bottom-6 -left-6 bg-black/80 backdrop-blur-xl border border-white/10 p-4 rounded-2xl hidden md:block">
+              <div className="absolute -bottom-6 -left-6 bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-gray-100 dark:border-white/10 p-4 rounded-2xl hidden md:block shadow-xl">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-500">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold">128% Increase</p>
-                    <p className="text-xs text-gray-400">Team productivity boost</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">128% Increase</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Team productivity boost</p>
                   </div>
                 </div>
               </div>
@@ -146,13 +146,13 @@ export default function LandingPage({ onLoginSuccess }) {
       </section>
 
       {/* Overview Section */}
-      <section id="overview" className="py-20 lg:py-32 bg-white/[0.02]">
+      <section id="overview" className="py-20 lg:py-32 bg-gray-50 dark:bg-white/[0.02] border-y border-gray-100 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-indigo-500 font-semibold text-sm tracking-wider uppercase mb-3">Overview</h2>
-            <h3 className="text-3xl lg:text-5xl font-bold mb-6">What is KanbanBoard?</h3>
-            <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-              KanbanBoard is a visual project management tool designed to help you organize work, limit work-in-progress, and maximize efficiency. It's more than just columns and cards—it's your command center.
+            <h2 className="text-indigo-600 dark:text-indigo-500 font-semibold text-sm tracking-wider uppercase mb-3">Overview</h2>
+            <h3 className="text-3xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white">What is KanbanFlow?</h3>
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+              KanbanFlow is a visual project management tool designed to help you organize work, limit work-in-progress, and maximize efficiency. It's more than just columns and cards—it's your command center.
             </p>
           </div>
           
@@ -165,23 +165,23 @@ export default function LandingPage({ onLoginSuccess }) {
                   { title: "Flexible Workflows", desc: "Custom columns and tags that adapt to your unique way of working." }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-500 mt-1">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-500 mt-1">
                       <ChevronRight className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold mb-2">{item.title}</h4>
-                      <p className="text-gray-400 leading-relaxed">{item.desc}</p>
+                      <h4 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{item.title}</h4>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="order-1 lg:order-2 rounded-2xl border border-white/5 bg-gradient-to-br from-white/10 to-transparent p-1">
-              <div className="rounded-[14px] overflow-hidden bg-[#0a0a0a]">
+            <div className="order-1 lg:order-2 rounded-2xl border border-gray-100 dark:border-white/5 bg-gradient-to-br from-indigo-500/5 to-transparent p-1">
+              <div className="rounded-[14px] overflow-hidden bg-gray-100 dark:bg-[#0a0a0a]">
                 <img 
                   src="/landing-preview.png" 
                   alt="Overview Illustration" 
-                  className="w-full h-auto opacity-80"
+                  className="w-full h-auto opacity-70 dark:opacity-80"
                 />
               </div>
             </div>
@@ -193,8 +193,8 @@ export default function LandingPage({ onLoginSuccess }) {
       <section id="features" className="py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-indigo-500 font-semibold text-sm tracking-wider uppercase mb-3">Features</h2>
-            <h3 className="text-3xl lg:text-5xl font-bold">Powerful tools for elite teams.</h3>
+            <h2 className="text-indigo-600 dark:text-indigo-500 font-semibold text-sm tracking-wider uppercase mb-3">Features</h2>
+            <h3 className="text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white">Powerful tools for elite teams.</h3>
           </div>
 
           <motion.div 
@@ -208,13 +208,13 @@ export default function LandingPage({ onLoginSuccess }) {
               <motion.div 
                 key={index}
                 variants={itemVariants}
-                className="group p-8 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all hover:bg-white/[0.05]"
+                className="group p-8 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 hover:border-indigo-500/20 dark:hover:border-white/10 transition-all hover:bg-white dark:hover:bg-white/[0.05] hover:shadow-xl hover:shadow-indigo-500/5"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-indigo-500/10`}>
                   {feature.icon}
                 </div>
-                <h4 className="text-xl font-bold mb-3">{feature.title}</h4>
-                <p className="text-gray-400 leading-relaxed">
+                <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h4>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                   {feature.description}
                 </p>
               </motion.div>
@@ -228,13 +228,13 @@ export default function LandingPage({ onLoginSuccess }) {
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-600/10 blur-[100px] rounded-full -z-10" />
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex p-3 rounded-2xl bg-indigo-500/10 text-indigo-500 mb-6">
+          <div className="inline-flex p-3 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-500 mb-6">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="text-3xl lg:text-5xl font-bold mb-8 text-balance leading-tight">
+          <h2 className="text-3xl lg:text-5xl font-bold mb-8 text-balance leading-tight text-gray-900 dark:text-white">
             Why This Project?
           </h2>
-          <div className="space-y-6 text-xl text-gray-400 leading-relaxed mb-12">
+          <div className="space-y-6 text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-12">
             <p>
               Many task management tools focus heavily on features but often overlook simplicity and consistency in user experience. This Kanban Board was built to provide a clean, intuitive, and reliable way to manage tasks without unnecessary complexity.
             </p>
@@ -245,19 +245,19 @@ export default function LandingPage({ onLoginSuccess }) {
               It demonstrates how a well-structured frontend application can handle dynamic state updates, drag-and-drop interactions, and real-time UI changes efficiently.
             </p>
           </div>
-          <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/20">
+          <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/20 shadow-inner">
             <div className="grid sm:grid-cols-3 gap-8">
               <div>
-                <p className="text-3xl font-bold text-indigo-400 mb-1">Fast</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest">Performance</p>
+                <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-1">Fast</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest">Performance</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-indigo-400 mb-1">Clean</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest">Interface</p>
+                <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-1">Clean</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest">Interface</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-indigo-400 mb-1">Smooth</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest">Workflow</p>
+                <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-1">Smooth</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest">Workflow</p>
               </div>
             </div>
           </div>
@@ -265,20 +265,20 @@ export default function LandingPage({ onLoginSuccess }) {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-white/5 bg-black/50">
+      <footer className="py-12 border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-2">
-              <Layout className="w-6 h-6 text-indigo-500" />
-              <span className="text-xl font-bold">KanbanFlow</span>
+              <Layout className="w-6 h-6 text-indigo-600 dark:text-indigo-500" />
+              <span className="text-xl font-bold text-gray-900 dark:text-white">KanbanFlow</span>
             </div>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 dark:text-gray-500 text-sm">
               © 2026 KanbanFlow. All rights reserved. Professional project management.
             </p>
-            <div className="flex gap-6 text-gray-500 text-sm">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
-              <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <div className="flex gap-6 text-gray-400 dark:text-gray-500 text-sm font-medium">
+              <a href="#" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Privacy</a>
+              <a href="#" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Terms</a>
+              <a href="#" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Contact</a>
             </div>
           </div>
         </div>

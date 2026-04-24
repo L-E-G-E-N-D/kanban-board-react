@@ -25,14 +25,14 @@ function Column({ id, title, tasks, onMove, onDelete, onEdit, onAdd, accentColor
         
         <div className="flex items-center justify-between mb-6 px-1">
           <div className="flex items-center gap-3">
-            <h2 className="text-sm font-bold text-white tracking-wide">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white tracking-wide">
               {title}
             </h2>
-            <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-gray-400">
+            <span className="px-2 py-0.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-[10px] font-bold text-gray-500 dark:text-gray-400">
               {tasks.length}
             </span>
           </div>
-          <button className="p-1 text-gray-500 hover:text-white transition">
+          <button className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition">
             <MoreHorizontal className="w-4 h-4" />
           </button>
         </div>

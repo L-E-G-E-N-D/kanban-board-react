@@ -500,19 +500,19 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
             <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
               <LayoutIcon className="w-5 h-5" />
             </div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
               {boardName || "My Workspace"}
             </h1>
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-500">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-              <span>{activeUsers.length} Online</span>
+              <span className="dark:text-gray-400">{activeUsers.length} Online</span>
             </div>
-            <span className="w-1 h-1 rounded-full bg-gray-700"></span>
+            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
             <div className="flex items-center gap-1.5">
               <Users className="w-4 h-4" />
-              <span>{boardMembers.length} Members</span>
+              <span className="dark:text-gray-400">{boardMembers.length} Members</span>
             </div>
           </div>
         </div>
@@ -523,20 +523,20 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
               {activeUsers.slice(0, 5).map((u, i) => (
                   <div 
                     key={i} 
-                    className="h-9 w-9 rounded-full ring-4 ring-[#050505] bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/10 flex items-center justify-center text-xs font-bold text-white shadow-xl"
+                    className="h-9 w-9 rounded-full ring-4 ring-white dark:ring-[#050505] bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/10 flex items-center justify-center text-xs font-bold text-white shadow-xl"
                     title={u.name || u.email}
                   >
                       {(u.name || u.email || 'A').charAt(0).toUpperCase()}
                   </div>
               ))}
               {activeUsers.length > 5 && (
-                  <div className="h-9 w-9 rounded-full ring-4 ring-[#050505] bg-gray-800 border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                  <div className="h-9 w-9 rounded-full ring-4 ring-white dark:ring-[#050505] bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500 dark:text-gray-400">
                       +{activeUsers.length - 5}
                   </div>
               )}
           </div>
 
-          <div className="h-8 w-[1px] bg-white/10 mx-2 hidden sm:block"></div>
+          <div className="h-8 w-[1px] bg-gray-200 dark:bg-white/10 mx-2 hidden sm:block"></div>
 
           <div className="flex items-center gap-3">
             <button
@@ -552,21 +552,21 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
                 onClick={() => setShowNotifications(!showNotifications)}
                 className={`p-2.5 rounded-xl border transition-all relative ${
                   showNotifications 
-                    ? "bg-white/10 border-white/20 text-white" 
-                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                    ? "bg-gray-100 dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-900 dark:text-white" 
+                    : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
                 }`}
               >
                 <Bell className="w-5 h-5" />
                 {notifications.some(n => !n.isRead) && (
-                  <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-rose-500 rounded-full border-2 border-[#050505]"></span>
+                  <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#050505]"></span>
                 )}
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-4 w-80 glass-dark rounded-2xl shadow-2xl border border-white/10 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
-                  <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/5">
-                    <h3 className="font-bold text-white">Notifications</h3>
-                    <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                <div className="absolute right-0 mt-4 w-80 glass-dark rounded-2xl shadow-2xl border border-gray-100 dark:border-white/10 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
+                  <div className="p-4 border-b border-gray-100 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-white/5">
+                    <h3 className="font-bold text-gray-900 dark:text-white">Notifications</h3>
+                    <span className="text-[10px] bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                       {notifications.filter(n => !n.isRead).length} New
                     </span>
                   </div>
@@ -580,12 +580,12 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
                         <div 
                           key={notification._id} 
                           onClick={() => markAsRead(notification._id)}
-                          className={`p-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition cursor-pointer ${!notification.isRead ? 'bg-indigo-500/5' : ''}`}
+                          className={`p-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-100 dark:hover:bg-white/5 transition cursor-pointer ${!notification.isRead ? 'bg-indigo-500/5' : ''}`}
                         >
-                          <p className={`text-sm text-gray-300 ${!notification.isRead ? 'font-medium text-white' : ''}`}>
+                          <p className={`text-sm text-gray-600 dark:text-gray-300 ${!notification.isRead ? 'font-medium text-gray-900 dark:text-white' : ''}`}>
                             {notification.message}
                           </p>
-                          <span className="text-[10px] text-gray-500 mt-2 block font-medium">
+                          <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 block font-medium">
                             {new Date(notification.createdAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -654,18 +654,18 @@ function Board({ token, user, tasks, setTasks, activeBoardId, boardName, searchQ
         </div>
 
         <div className="w-full xl:w-80 shrink-0 space-y-8 xl:sticky xl:top-6">
-          <div className="glass-dark rounded-3xl p-6 border border-white/5">
+          <div className="glass-dark rounded-3xl p-6 border border-gray-100 dark:border-white/5">
             <div className="flex items-center gap-2 mb-6">
-              <BarChart3 className="w-5 h-5 text-indigo-400" />
-              <h3 className="text-lg font-bold text-white">Board Analytics</h3>
+              <BarChart3 className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Board Analytics</h3>
             </div>
             <StatsPanel tasks={tasks} analytics={analytics} />
           </div>
           
-          <div className="glass-dark rounded-3xl p-6 border border-white/5">
+          <div className="glass-dark rounded-3xl p-6 border border-gray-100 dark:border-white/5">
             <div className="flex items-center gap-2 mb-6">
-              <Activity className="w-5 h-5 text-purple-400" />
-              <h3 className="text-lg font-bold text-white">Activity Flow</h3>
+              <Activity className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Activity Flow</h3>
             </div>
             <ActivityMonitor activities={activityLog} />
           </div>

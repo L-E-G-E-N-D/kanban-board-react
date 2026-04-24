@@ -54,20 +54,20 @@ function StatsPanel({ tasks, analytics }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white/[0.03] border border-white/5 p-4 rounded-2xl">
-          <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-1">Total</p>
-          <p className="text-2xl font-bold text-white">{stats.total}</p>
+        <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 p-4 rounded-2xl">
+          <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider mb-1">Total</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
         </div>
-        <div className="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-2xl">
-          <p className="text-[10px] uppercase font-bold text-emerald-500/60 tracking-wider mb-1">Done</p>
-          <p className="text-2xl font-bold text-emerald-400">{stats.completed}</p>
+        <div className="bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10 p-4 rounded-2xl">
+          <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-500/60 tracking-wider mb-1">Done</p>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.completed}</p>
         </div>
       </div>
 
-      <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-2xl">
-          <p className="text-[10px] uppercase font-bold text-amber-500/60 tracking-wider mb-1">Pending Tasks</p>
-          <p className="text-2xl font-bold text-amber-400">{stats.pending}</p>
-          <div className="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+      <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 p-4 rounded-2xl">
+          <p className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-500/60 tracking-wider mb-1">Pending Tasks</p>
+          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.pending}</p>
+          <div className="w-full bg-gray-200 dark:bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
              <div 
                 className="bg-amber-500 h-full rounded-full transition-all duration-1000" 
                 style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }}
@@ -94,22 +94,22 @@ function StatsPanel({ tasks, analytics }) {
                 </Pie>
                 <Tooltip
                   contentStyle={{ 
-                      backgroundColor: "rgba(10, 10, 10, 0.9)", 
-                      border: "1px solid rgba(255, 255, 255, 0.1)", 
+                      backgroundColor: "var(--card)", 
+                      border: "1px solid var(--border)", 
                       borderRadius: "12px", 
-                      backdropBlur: "8px",
+                      backdropFilter: "blur(8px)",
                       fontSize: "12px", 
-                      color: "#fff" 
+                      color: "var(--foreground)" 
                   }}
-                  itemStyle={{ color: "#fff" }}
+                  itemStyle={{ color: "var(--foreground)" }}
                 />
               </PieChart>
             </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-lg font-bold text-white leading-none">
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20">
+                <span className="text-xl font-bold text-gray-900 dark:text-white leading-none">
                     {Math.round(stats.total > 0 ? (stats.completed / stats.total) * 100 : 0)}%
                 </span>
-                <span className="text-[8px] text-gray-500 uppercase font-bold tracking-tighter mt-1">Efficiency</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-tighter mt-1">Efficiency</span>
             </div>
           </div>
 
@@ -129,13 +129,15 @@ function StatsPanel({ tasks, analytics }) {
                   tickLine={false} 
                 />
                 <Tooltip
-                   cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                   cursor={{ fill: 'rgba(0, 0, 0, 0.05)', className: 'dark:fill-white/5' }}
                    contentStyle={{ 
-                       backgroundColor: "rgba(10, 10, 10, 0.9)", 
-                       border: "1px solid rgba(255, 255, 255, 0.1)", 
+                       backgroundColor: "var(--card)", 
+                       border: "1px solid var(--border)", 
                        borderRadius: "12px", 
-                       fontSize: "12px"
+                       fontSize: "12px",
+                       color: "var(--foreground)"
                    }}
+                   itemStyle={{ color: "var(--foreground)" }}
                 />
                 <Bar 
                   dataKey="value" 

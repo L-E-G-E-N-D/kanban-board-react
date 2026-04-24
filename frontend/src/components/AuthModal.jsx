@@ -71,14 +71,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login", onLo
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          className="relative w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
         >
           {/* Accent Glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
           
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors"
+            className="absolute top-4 right-4 p-2 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -87,10 +87,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login", onLo
             <div className="inline-flex p-3 rounded-2xl bg-indigo-500/10 text-indigo-500 mb-4">
               <Layout className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-bold mb-2">
+            <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
               {mode === "login" ? "Welcome Back" : "Create Account"}
             </h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               {mode === "login" ? "Enter your details to access your boards" : "Join KanbanFlow to start organizing today"}
             </p>
           </div>
@@ -117,7 +117,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login", onLo
                     placeholder="John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login", onLo
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                 </div>
               </div>
