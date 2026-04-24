@@ -232,7 +232,7 @@ export default function LandingPage() {
             Built for Stability, Not Just for Free Hosting.
           </h2>
           <p className="text-xl text-gray-400 leading-relaxed mb-12">
-            Most projects disappear when free hosting tiers expire or servers go down. We've built KanbanFlow on a robust architecture designed for 99.9% uptime and data integrity. Your projects are too important to be hosted on shaky ground.
+            Most projects disappear when free hosting tiers expire or servers go down. I've built KanbanFlow on a robust architecture designed for 99.9% uptime and data integrity. Your projects are too important to be hosted on shaky ground.
           </p>
           <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/20">
             <div className="grid sm:grid-cols-3 gap-8">
