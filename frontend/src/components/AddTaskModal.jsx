@@ -12,7 +12,7 @@ function AddTaskModal({ isOpen, onClose, onAddTask }) {
     e.preventDefault();
     if (title.trim() === "") return;
     
-    // Pass dueDate or null/string
+
     onAddTask(title, description, priority, dueDate);
     setTitle("");
     setDescription("");

@@ -60,7 +60,7 @@ app.get('/health', (req, res) => {
   res.send("Backend running");
 });
 
-// Board Routes
+
 app.get("/boards", auth, async (req, res) => {
   const boards = await Board.find({
     $or: [{ ownerId: req.userId }, { members: req.userId }],
@@ -138,7 +138,9 @@ app.post("/boards/:id/invite", auth, async (req, res) => {
   board.members.push(userToInvite._id);
   await board.save();
 
-  // Create notification
+
+
+
   await Notification.create({
     userId: userToInvite._id,
     message: `You have been invited to join the board "${board.name}"`,
@@ -183,7 +185,9 @@ app.delete("/boards/:id", auth, async (req, res) => {
 
   await Board.deleteOne({ _id: req.params.id });
 
-  // Delete all tasks associated with this board
+
+
+  
   await Task.deleteMany({ boardId: req.params.id });
 
   res.json({ message: "Board deleted successfully" });

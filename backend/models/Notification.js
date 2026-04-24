@@ -16,11 +16,11 @@ const notificationSchema = new mongoose.Schema(
             default: false,
         },
         type: {
-            type: String, // 'invite', 'info', etc.
+            type: String,
             default: 'info',
         },
         relatedId: {
-            type: mongoose.Schema.Types.ObjectId, // Could be BoardId, TaskId, etc.
+            type: mongoose.Schema.Types.ObjectId,
             default: null,
         },
     },
