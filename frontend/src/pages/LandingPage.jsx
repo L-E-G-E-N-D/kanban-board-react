@@ -229,27 +229,35 @@ export default function LandingPage({ onLoginSuccess }) {
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex p-3 rounded-2xl bg-indigo-500/10 text-indigo-500 mb-6">
-            <Shield className="w-8 h-8" />
+            <CheckCircle2 className="w-8 h-8" />
           </div>
           <h2 className="text-3xl lg:text-5xl font-bold mb-8 text-balance leading-tight">
-            Built for Stability, Not Just for Free Hosting.
+            Why This Project?
           </h2>
-          <p className="text-xl text-gray-400 leading-relaxed mb-12">
-            Most projects disappear when free hosting tiers expire or servers go down. I've built KanbanFlow on a robust architecture designed for 99.9% uptime and data integrity. Your projects are too important to be hosted on shaky ground.
-          </p>
+          <div className="space-y-6 text-xl text-gray-400 leading-relaxed mb-12">
+            <p>
+              Many task management tools focus heavily on features but often overlook simplicity and consistency in user experience. This Kanban Board was built to provide a clean, intuitive, and reliable way to manage tasks without unnecessary complexity.
+            </p>
+            <p>
+              The goal is to help users stay organized through a visual workflow that is fast, responsive, and easy to use. Unlike many student projects that are overly complicated or unstable, this project focuses on delivering a smooth and dependable task management experience.
+            </p>
+            <p>
+              It demonstrates how a well-structured frontend application can handle dynamic state updates, drag-and-drop interactions, and real-time UI changes efficiently.
+            </p>
+          </div>
           <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/20">
             <div className="grid sm:grid-cols-3 gap-8">
               <div>
-                <p className="text-3xl font-bold text-indigo-400 mb-1">99.9%</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest">Uptime</p>
+                <p className="text-3xl font-bold text-indigo-400 mb-1">Fast</p>
+                <p className="text-sm text-gray-500 uppercase tracking-widest">Performance</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-indigo-400 mb-1">256-bit</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest">Encryption</p>
+                <p className="text-3xl font-bold text-indigo-400 mb-1">Clean</p>
+                <p className="text-sm text-gray-500 uppercase tracking-widest">Interface</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-indigo-400 mb-1">Infinite</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest">Scalability</p>
+                <p className="text-3xl font-bold text-indigo-400 mb-1">Smooth</p>
+                <p className="text-sm text-gray-500 uppercase tracking-widest">Workflow</p>
               </div>
             </div>
           </div>
